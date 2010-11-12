@@ -1,6 +1,8 @@
-#General Info
+# General Info
 
 Name: Tea-Fueled Last.fm PHP Class
+
+Version 0.2
 
 Author: Matthew Loberg
 
@@ -14,7 +16,7 @@ Understandable Licence: http://creativecommons.org/licenses/MIT/
 
 ***
 
-##About
+## About
 
 This was a class I created for last.fm's API. Currently only three calls are supported.
 
@@ -26,14 +28,20 @@ This was a class I created for last.fm's API. Currently only three calls are sup
 
 ***
 
-##Changelog:
+## Changelog:
 
-###0.1
+### 0.1
 
 * Created class
 * Added user.getLovedTracks
 * Added user.getRecentTracks
 * Added user.getBannedTracks
+
+### 0.2
+
+* More in file documentation
+* Added limit as optional parameter to all existing methods
+* Added time back parameter to getRecent()
 
 ***
 
