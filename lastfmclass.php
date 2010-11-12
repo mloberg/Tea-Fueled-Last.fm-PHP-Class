@@ -42,10 +42,12 @@ class lastFM{
 			
 			/*
 				Some tracks do not include an album image,
-				so check to see if $img is empty, if it is,
-				do not echo $img
+				so we do a check to see if there is an image tag in the xml.
+				If there is, echo $img.
 			*/
-			echo '<p><img src="' . $img . '" alt="' . $name . '" /></p>\n';
+			if($track->image){
+				echo '<p><img src="' . $img . '" alt="' . $name . '" /></p>';
+			}
 			echo '<p><a href="http://' . $url . '">' . $name . '</a> by <a href="' . $artisturl . '">' . $artist . '</a></p>';
 		}
 	}
@@ -89,10 +91,10 @@ class lastFM{
 			
 			/*
 				Some tracks do not include an album image,
-				so check to see if $img is empty, if it is,
-				do not echo $img
+				so we do a check to see if there is an image tag in the xml.
+				If there is, echo $img.
 			*/
-			if($img == ""){
+			if($track->image){
 				echo '<p><img src="' . $img . '" alt="' . $name . '" /></p>';
 			}
 			echo '<p><a href="http://' . $url . '">' . $name . '</a> by ' . $artist . '</p>';
