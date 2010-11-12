@@ -2,6 +2,8 @@
 
 Name: Tea-Fueled Last.fm PHP Class
 
+Version 0.2
+
 Author: Matthew Loberg
 
 URL: http://mloberg.com/blog/lastfmclass/
