@@ -16,14 +16,14 @@ class lastFM{
 
 	// Set "global" parameters
 	public $url = 'http://ws.audioscrobbler.com/2.0/';
-	private $apikey;
-	private $api = '&api_key=' . $apikey;
+	public $apikey;
 	public $user;
 	
 	
-	public function getLoved(){
+	public function getLoved($l){
+		$limit = $l;
 		// build the url
-		$lastfm = $this->url . '?method=user.getlovedtracks&user=' . $this->user . $this->api;
+		$lastfm = $this->url . '?method=user.getlovedtracks&user=' . $this->user . '&limit=' . $limit . '&api_key=' . $this->apikey;
 		$xml = simplexml_load_file($lastfm);
 		
 		$tracks = $xml->lovedtracks->track;
