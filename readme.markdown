@@ -30,18 +30,18 @@ This was a class I created for last.fm's API. Currently only three calls are sup
 
 ## Changelog:
 
+### 0.2
+
+* More in file documentation
+* Added limit as optional parameter to all existing methods
+* Added time back parameter to getRecent()
+
 ### 0.1
 
 * Created class
 * Added user.getLovedTracks
 * Added user.getRecentTracks
 * Added user.getBannedTracks
-
-### 0.2
-
-* More in file documentation
-* Added limit as optional parameter to all existing methods
-* Added time back parameter to getRecent()
 
 ***
 
