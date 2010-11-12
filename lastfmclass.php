@@ -2,7 +2,7 @@
 /*
 	Name: Tea-Fueled Last.fm PHP Class
 	Author: Matthew Loberg
-	URL: http://
+	URL: http://mloberg.com/blog/lastfmclass/
 	Author URL: http://mloberg.com
 	Version: 0.1
 	License: Copyright 2010 Matthew Loberg. Licenced under the MIT licence. More information in licence.txt, readme.txt, and at http://creativecommons.org/licenses/MIT/
@@ -21,7 +21,7 @@ class lastFM{
 	public $user;
 	
 	
-	public function get_loved(){
+	public function getLoved(){
 		// build the url
 		$lastfm = $this->url . '?method=user.getlovedtracks&user=' . $this->user . $this->api;
 		$xml = simplexml_load_file($lastfm);
@@ -40,7 +40,7 @@ class lastFM{
 		}
 	}
 	
-	public function get_recent(){
+	public function getRecent(){
 		// build the api url
 		$lastfm = $this->url . '?method=user.getrecenttracks&user=' . $this->user . $this->api;
 		$xml = simplexml_load_file($lastfm);
@@ -55,7 +55,7 @@ class lastFM{
 		}
 	}
 	
-	function get_banned(){
+	function getBanned(){
 		// build the api url
 		$lastfm = $this->url . '?method=user.getbannedtracks&user=' . $this->user . $this->api;
 		$xml = simplexml_load_file($lastfm);

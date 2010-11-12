@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>Tea-Fueled Last.fm PHP Class Dcomentation</title>
+	<link rel="stylesheet" href="css/style.css" />
+	<!--[if IE]>
+		<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+</head>
+<body>
+<div id="wrapper">
+<h1>Tea-Fueled Last.fm PHP Class</h1>
+<p>This is a new project, things will change, so I didn't spend much time on this documentation, because things will probably change. But for early adopters, here is how you can use it now.</p>
+<p>First you have to call lastfmclass.php by using include().</p>
+<pre>
+&lt;?php include("lastfmclass.php"); ?> 
+</pre>
+<p>Then you initialize it:</p>
+<pre>
+&lt;?php $lastfm = new lastFM(); ?>
+</pre>
+<p>Then you need to set some parameters.</p>
+<pre>
+&lt;?php
+	$lastfm->user = "yourusername";
+	$lastfm->apikey = "yourApiKey";	
+?>
+</pre>
+<p>This class requires that you use your own API key. It's simple to get one, just head over to <a href="http://www.last.fm/api/account">http://www.last.fm/api/account</a>.</p>
+<p>So all together, it should look something like:</p>
+<pre>
+&lt;?php
+	include('lastfmclass.php');
+	$lastfm = new lastFM();
+	$lastfm->user = "username";
+	$lastfm->apikey = "apikey";
+?>
+</pre>
+<p>Now we can make a Last.fm API call.</p>
+<p>Currently there are only a couple supported calls.</p>
+<ul>
+	<li>user.getLovedTracks</li>
+	<li>user.getRecentTracks</li>
+	<li>user.getBannedTracks</li>
+</ul>
+<p>Support for more calls will be added in the future, but let's see how we can use these calls:</p>
+<pre>
+&lt;?php $lastfm->getLoved(); ?>
+</pre>
+<p>The above call is to get the users loved tracks. Pretty easy. Let's look at the other calls.</p>
+<p>Get recently played:</p>
+<pre>
+&lt;?php $lastfm->getRecent(); ?>
+</pre>
+<p>Get banned tracks:</p>
+<pre>
+&lt;?php $lastfm->getBanned(); ?>
+</pre>
+<h2>To Do:</h2>
+<ul>
+	<li>Add more API calls</li>
+	<li>Allow for options to be passed for API calls
+		<ul>
+			<li>Return as list or as paragraph</li>
+			<li>Limit number of tracks</li>
+		</ul>
+	</li>
+</ul>
+</div>
+</body>
+</html>

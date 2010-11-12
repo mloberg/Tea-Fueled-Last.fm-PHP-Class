@@ -4,7 +4,7 @@ Name: Tea-Fueled Last.fm PHP Class
 
 Author: Matthew Loberg
 
-URL: coming soon
+URL: http://mloberg.com/blog/lastfmclass/
 
 Author URL: http://mloberg.com
 
