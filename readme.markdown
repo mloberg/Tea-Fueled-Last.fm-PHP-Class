@@ -12,6 +12,8 @@ Licence: Copyright (c) 2010 Matthew Loberg under the MIT Licence (licence.txt)
 
 Understandable Licence: http://creativecommons.org/licenses/MIT/
 
+Requires: At least PHP 5.1
+
 ***
 
 ##About
@@ -21,8 +23,6 @@ This was a class I created for last.fm's API. Currently only three calls are sup
 1. Get Loved Tracks
 2. Get Recent Tracks
 3. Get Banned Tracks
-
-**More documentation will be coming.** I just created this, and I'm still working on the details and stuff.
 
 ***
 
@@ -35,11 +35,17 @@ This was a class I created for last.fm's API. Currently only three calls are sup
 * Added user.getRecentTracks
 * Added user.getBannedTracks
 
+###0.2
+
+* Added limit to getLoved(), getRecent(), and getBanned() methods
+* Added getRecentDays() and getRecentMonths() methods
+
 ***
 
 ##To Do:
 
+* In getRecent() function, see if the track is currently playing
 * Add more API calls
 * Allow for options to be passed
    * Such as return as list instead of paragraph
-   * Define the number of tracks returned
+* Write better documentation
