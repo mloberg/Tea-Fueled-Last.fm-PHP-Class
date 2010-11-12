@@ -39,6 +39,7 @@ This was a class I created for last.fm's API. Currently only three calls are sup
 
 ##To Do:
 
+* In getRecent() function, see if the track is currently playing
 * Add more API calls
 * Allow for options to be passed
    * Such as return as list instead of paragraph
