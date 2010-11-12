@@ -1,0 +1,6 @@
+# .gitignore file
+
+lastfm.php
+
+# Mac OS X files
+.DS_Store
