@@ -52,9 +52,43 @@ class lastFM{
 		}
 	}
 	
-	public function getRecent(){
-		// build the api url
-		$lastfm = $this->url . '?method=user.getrecenttracks&user=' . $this->user . '&api_key=' . $this->apikey;
+	/*
+		user.getRecentTracks has muliple optional parameters,
+		limit, to, and from. More info here, http://www.last.fm/api/show?service=278
+		In this method, all parameters are optional, so you can use it as it.
+		The two optional parameters are limit, and time back.
+		The time back parameter is specified in days.
+		One "bug" is if you want to specify the time back, you must also specify a limit.
+		You could pass nothing ('') or -1 as a limit to get all.
+	*/
+	   
+	public function getRecent($l='',$t=''){
+		// set the parameters if any were passed
+		$limit = $l;
+		$timeBack = $t;
+		
+		/*
+			Last.fm to and from needs to be specified in UNIX timestamp format in the UTC time zone.
+			Since we are specifying the time back (in days), we can set to as the current time stamp.
+			
+		*/
+		
+		// set the timezone to UTC
+		date_default_timezone_set('UTC');
+		// get the current UNIX timestamp
+		$to = time();
+		// then figure out the time back in seconds
+		$from = time() - (60 * 60 * 24 * $timeBack);
+		
+		// now see if the a time parameter was passed
+		if($t == ""){
+			// time back was not specified, run normal
+			// build the api url
+			$lastfm = $this->url . '?method=user.getrecenttracks&user=' . $this->user . '&limit=' . $limit . '&api_key=' . $this->apikey;
+		}else{
+			// build the api url
+			$lastfm = $this->url . '?method=user.getrecenttracks&user=' . $this->user . '&limit=' . $limit . '&from=' . $from . '$to=' . $to . '&api_key=' . $this->apikey;
+		}
 		// get the xml file
 		$xml = simplexml_load_file($lastfm);
 		
@@ -70,7 +104,7 @@ class lastFM{
 		}
 	}
 	
-	function getBanned($l=''){
+	public function getBanned($l=''){
 		// set the parameters if any were passed
 		$limit = $l;
 		// build the api url
