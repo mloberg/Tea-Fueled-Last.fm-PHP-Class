@@ -20,13 +20,15 @@ This was a class I created for last.fm's API. Currently only three calls are sup
 Changelog:
 
 0.1
-*Created class
-*Added user.getLovedTracks
-*Added user.getRecentTracks
-*Added user.getBannedTracks
+
+* Created class
+* Added user.getLovedTracks
+* Added user.getRecentTracks
+* Added user.getBannedTracks
 
 To Do:
-*Add more API calls
-*Allow for options to be passed
-   *Such as return as list instead of paragraph
-   *Define the number of tracks returned
+
+* Add more API calls
+* Allow for options to be passed
+   * Such as return as list instead of paragraph
+   * Define the number of tracks returned
