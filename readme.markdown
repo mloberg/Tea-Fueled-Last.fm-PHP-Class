@@ -22,8 +22,6 @@ This was a class I created for last.fm's API. Currently only three calls are sup
 2. Get Recent Tracks
 3. Get Banned Tracks
 
-**More documentation will be coming.** I just created this, and I'm still working on the details and stuff.
-
 ***
 
 ##Changelog:
@@ -35,6 +33,10 @@ This was a class I created for last.fm's API. Currently only three calls are sup
 * Added user.getRecentTracks
 * Added user.getBannedTracks
 
+###0.2
+
+* Added limit to getLoved() and getBanned() methods
+
 ***
 
 ##To Do:
@@ -42,4 +44,4 @@ This was a class I created for last.fm's API. Currently only three calls are sup
 * Add more API calls
 * Allow for options to be passed
    * Such as return as list instead of paragraph
-   * Define the number of tracks returned
+* Write better documentation
