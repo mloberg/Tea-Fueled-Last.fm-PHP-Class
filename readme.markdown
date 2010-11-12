@@ -1,4 +1,5 @@
 #General Info
+
 Name: Tea-Fueled Last.fm PHP Class
 
 Author: Matthew Loberg
