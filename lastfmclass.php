@@ -149,9 +149,11 @@ class lastFM{
 		LIBRARY METHODS
 	************************/
 	
-	public function getLibraryTracks(){
+	public function getLibraryTracks($l=''){
+		// set the parameters if any were passed
+		$limit = $l;
 		// build the api url
-		$lastfm = $this->url . '?method=library.gettracks&user=' . $this->user . '&api_key=' . $this->apikey;
+		$lastfm = $this->url . '?method=library.gettracks&user=' . $this->user . '&limit=' . $limit . '&api_key=' . $this->apikey;
 		// get the xml file
 		$xml = simplexml_load_file($lastfm);
 		
