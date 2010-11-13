@@ -4,7 +4,7 @@
 	Author: Matthew Loberg
 	URL: http://mloberg.com/blog/lastfmclass/
 	Author URL: http://mloberg.com
-	Version: 0.2
+	Version: 0.3
 	License: Copyright 2010 Matthew Loberg. Licenced under the MIT licence. More information in licence.txt, readme.txt, and at http://creativecommons.org/licenses/MIT/
 	.
 	This is a last.fm class I created for making API calls to last.fm.
@@ -19,8 +19,11 @@ class lastFM{
 	public $apikey;
 	public $user;
 	
+	/************************
+		USER METHODS
+	************************/
 	
-	public function getLoved($l=''){
+	public function getUserLoved($l=''){
 		// set the parameters if any were passed
 		$limit = $l;
 		// build the url
@@ -62,7 +65,7 @@ class lastFM{
 		You could pass nothing ('') or -1 as a limit to get all.
 	*/
 	   
-	public function getRecent($l='',$t=''){
+	public function getUserRecent($l='',$t=''){
 		// set the parameters if any were passed
 		$limit = $l;
 		$timeBack = $t;
@@ -103,6 +106,7 @@ class lastFM{
 			$img = $img->image[2];
 			
 			// echo track info
+			// make sure it has an image before echoing an image
 			if($track->image){
 				echo '<p><img src="' . $img . '" alt="' . $album . '" /></p>';
 			}
@@ -110,7 +114,7 @@ class lastFM{
 		}
 	}
 	
-	public function getBanned($l=''){
+	public function getUserBanned($l=''){
 		// set the parameters if any were passed
 		$limit = $l;
 		// build the api url
@@ -138,6 +142,44 @@ class lastFM{
 				echo '<p><img src="' . $img . '" alt="' . $name . '" /></p>';
 			}
 			echo '<p><a href="http://' . $url . '">' . $name . '</a> by ' . $artist . '</p>';
+		}
+	}
+	
+	/************************
+		LIBRARY METHODS
+	************************/
+	
+	public function getLibraryTracks(){
+		// build the api url
+		$lastfm = $this->url . '?method=library.gettracks&user=' . $this->user . '&api_key=' . $this->apikey;
+		// get the xml file
+		$xml = simplexml_load_file($lastfm);
+		
+		$tracks = $xml->tracks->track;
+		foreach($tracks as $track){
+			// gather track info
+			$name = $track->name;
+			$url = $track->url;
+			$artist = $track->artist->name;
+			$album = $track->album->name;
+			$img = $track->children();
+			$img = $track->image[2];
+			$playcount = $track->playcount;
+			
+			// if $playcount is equal to one, we need to set the playcount string to played 1 time instead of 1 times.
+			if($playcount == "1"){
+				$playcount = "Played " . $playcount . " time.";
+			}else{
+				$playcount = "Played " . $playcount . " times";
+			}
+			
+			// now echo track info
+			// make sure there is an image before echoing it
+			if($track->image){
+				echo '<p><img src="' . $img . '" alt="' . $album . '" /></p>';
+			}
+			echo '<p><a href="' . $url . '">' . $name . '</a> off <em>' . $album . '</em> by ' . $artist . '.</p>';
+			echo '<p>' . $playcount . '</p>';
 		}
 	}
 
