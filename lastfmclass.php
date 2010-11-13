@@ -98,9 +98,15 @@ class lastFM{
 			$name = $track->name;
 			$url = $track->url;
 			$artist = $track->artist;
+			$album = $track->album;
+			$img = $track->children();
+			$img = $img->image[2];
 			
 			// echo track info
-			echo '<p><a href="' . $url . '">' . $name . '</a> by ' . $artist . '</p>';
+			if($track->image){
+				echo '<p><img src="' . $img . '" alt="' . $album . ' /></p>';
+			}
+			echo '<p><a href="' . $url . '">' . $name . '</a> off ' . $album . ' by ' . $artist . '</p>';
 		}
 	}
 	
