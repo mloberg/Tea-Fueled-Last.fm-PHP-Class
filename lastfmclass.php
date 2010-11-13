@@ -104,9 +104,9 @@ class lastFM{
 			
 			// echo track info
 			if($track->image){
-				echo '<p><img src="' . $img . '" alt="' . $album . ' /></p>';
+				echo '<p><img src="' . $img . '" alt="' . $album . '" /></p>';
 			}
-			echo '<p><a href="' . $url . '">' . $name . '</a> off ' . $album . ' by ' . $artist . '</p>';
+			echo '<p><a href="' . $url . '">' . $name . '</a> off <em>' . $album . '</em> by ' . $artist . '</p>';
 		}
 	}
 	
