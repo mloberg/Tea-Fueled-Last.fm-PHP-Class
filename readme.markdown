@@ -24,6 +24,19 @@ This was a class I created for last.fm's API. Not all of Last.fm's API calls are
 2. Get Recent Tracks
 3. Get Banned Tracks
 4. Get Library Tracks
+5. Get Library Artists
+6. Get Library Albums
+
+***
+
+##To Do:
+
+* In getRecent() function, see if the track is currently playing
+* Add more API calls
+* Allow for options to be passed
+   * Such as return as list or array instead of paragraph
+* Add styling to returned paragraphs
+* Add width and height to all images
 
 ***
 
@@ -46,13 +59,3 @@ This was a class I created for last.fm's API. Not all of Last.fm's API calls are
 * Added user.getLovedTracks
 * Added user.getRecentTracks
 * Added user.getBannedTracks
-
-***
-
-##To Do:
-
-* In getRecent() function, see if the track is currently playing
-* Add more API calls
-* Allow for options to be passed
-   * Such as return as list or array instead of paragraph
-* Add styling to returned paragraphs

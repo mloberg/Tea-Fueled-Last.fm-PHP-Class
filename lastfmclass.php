@@ -49,7 +49,7 @@ class lastFM{
 				If there is, echo $img.
 			*/
 			if($track->image){
-				echo '<p><img src="' . $img . '" alt="' . $name . '" /></p>';
+				echo '<p><img src="' . $img . '" alt="' . $name . '" width="126" height="126" /></p>';
 			}
 			echo '<p><a href="http://' . $url . '">' . $name . '</a> by <a href="' . $artisturl . '">' . $artist . '</a></p>';
 		}
@@ -108,7 +108,7 @@ class lastFM{
 			// echo track info
 			// make sure it has an image before echoing an image
 			if($track->image){
-				echo '<p><img src="' . $img . '" alt="' . $album . '" /></p>';
+				echo '<p><img src="' . $img . '" alt="' . $album . '" width="126" height="126" /></p>';
 			}
 			echo '<p><a href="' . $url . '">' . $name . '</a> off <em>' . $album . '</em> by ' . $artist . '</p>';
 		}
@@ -139,7 +139,7 @@ class lastFM{
 				If there is, echo $img.
 			*/
 			if($track->image){
-				echo '<p><img src="' . $img . '" alt="' . $name . '" /></p>';
+				echo '<p><img src="' . $img . '" alt="' . $name . '" width="126" height="126" /></p>';
 			}
 			echo '<p><a href="http://' . $url . '">' . $name . '</a> by ' . $artist . '</p>';
 		}
@@ -165,7 +165,7 @@ class lastFM{
 			$artist = $track->artist->name;
 			$album = $track->album->name;
 			$img = $track->children();
-			$img = $track->image[2];
+			$img = $img->image[2];
 			$playcount = $track->playcount;
 			
 			// if $playcount is equal to one, we need to set the playcount string to played 1 time instead of 1 times.
@@ -178,11 +178,79 @@ class lastFM{
 			// now echo track info
 			// make sure there is an image before echoing it
 			if($track->image){
-				echo '<p><img src="' . $img . '" alt="' . $album . '" /></p>';
+				echo '<p><img src="' . $img . '" alt="' . $album . '" width="126" height="126" /></p>';
 			}
 			echo '<p><a href="' . $url . '">' . $name . '</a> off <em>' . $album . '</em> by ' . $artist . '.</p>';
 			echo '<p>' . $playcount . '</p>';
 		}
+	}
+	
+	public function getLibraryArtists($l=''){
+		// set the parameters if any were passed
+		$limit = $l;
+		// build the api url
+		$lastfm = $this->url . '?method=library.getartists&user=' . $this->user . '&limit=' . $limit . '&api_key=' . $this->apikey;
+		// get the xml file
+		$xml = simplexml_load_file($lastfm);
+		
+		$artists = $xml->artists->artist;
+		foreach($artists as $artist){
+			// gather artist info
+			$name = $artist->name;
+			$url = $artist->url;
+			$img = $artist->children();
+			$img = $img->image[2];
+			$playcount = $artist->playcount;
+			
+			// if $playcount is equal to one, we need to set the playcount string to played 1 time instead of 1 times.
+			if($playcount == "1"){
+				$playcount = "played " . $playcount . " time.";
+			}else{
+				$playcount = "played " . $playcount . " times.";
+			}
+			
+			// echo the info
+			// make sure there is an image before echoing it
+			if($artist->image){
+				echo '<p><img src="' . $img . '" alt="' . $name . '" /></p>';
+			}
+			echo '<p><a href="' . $url . '">' . $name . '</a> ' . $playcount . '</p>';
+		}
+	}
+	
+	public function getLibraryAlbums($l=''){
+		// set the parameters if any were passed
+		$limit = $l;
+		// build the api url
+		$lastfm = $this->url . '?method=library.getalbums&user=' . $this->user . '&limit=' . $limit . '&api_key=' . $this->apikey;
+		// get the xml document
+		$xml = simplexml_load_file($lastfm);
+		
+		$albums = $xml->albums->album;
+		foreach($albums as $album){
+			// gather album info
+			$name = $album->name;
+			$url = $album->url;
+			$artist = $album->artist->name;
+			$artisturl = $album->artist->url;
+			$img = $album->children();
+			$img = $img->image[2];
+			$playcount = $album->playcount;
+			
+			// if $playcount is equal to one, we need to set the playcount string to played 1 time instead of 1 times.
+			if($playcount == "1"){
+				$playcount = 'played ' . $playcount . ' time.';
+			}else{
+				$playcount = 'played ' . $playcount . ' times.';
+			}
+			
+			// make sure there is an image before we echo it
+			if($album->image){
+				echo '<p><img src="' . $img . '" alt="' . $name . '" width="126" height="126" /></p>';
+			}
+			echo '<p><a href="' . $url . '">' . $name . '</a> by <a href="' . $artisturl . '">' . $artist . '</a> ' . $playcount . '</p>';
+		}
+		
 	}
 
 }
