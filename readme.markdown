@@ -27,6 +27,7 @@ This was a class I created for last.fm's API. Not all of Last.fm's API calls are
 5. Get Library Artists
 6. Get Library Albums
 7. Get User Events
+8. Get Geo Events
 
 ***
 
@@ -49,6 +50,7 @@ This was a class I created for last.fm's API. Not all of Last.fm's API calls are
 * Changed current method names
 * Added library calls
 * Added user.getEvents
+* Added geo.getEvents
 
 ### 0.2
 

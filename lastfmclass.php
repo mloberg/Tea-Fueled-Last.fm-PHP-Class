@@ -337,5 +337,106 @@ class lastFM{
 		}
 	}
 	
+	/************************
+		GEO CALLS
+	************************/
+
+	public function getNearbyEvents($l=''){
+		/************
+		 If you do not specify a location, you will recive all events,
+		 to fix this I am using geoplugin (http://geoplugin.com) to get the
+		 user's current location.
+		 You can of course, still specify a location
+		************/
+		// set the location, if a parameter was passed back, use that
+		if($l !== ""){
+			$location = $l;
+		}else{
+			$geoplugin = 'http://www.geoplugin.net/xml.gp?ip=';
+			$userip = $_SERVER['REMOTE_ADDR'];
+			$geourl = $geoplugin . $userip;
+			$geoxml = simplexml_load_file($geourl);
+			$location = $geoxml->geoplugin_city;
+		}
+		// build the api url
+		$lastfm = $this->url . '?method=geo.getevents&location=' . $location . '&api_key=' . $this->apikey;
+		// get the xml doc
+		$xml = simplexml_load_file($lastfm);
+		
+		$events = $xml->events->event;
+		
+		// check to see if there are any events
+		if($events){
+			foreach($events as $event){
+				// get event information
+				$title = $event->title;
+				$artists = $event->artists->artist;
+				$headline = $event->artists->headliner;
+				$venue = $event->venue->name;
+				$location = $event->venue->location->city;
+				$venueUrl = $event->venue->url;
+				$venueWebsite = $event->venue->website;
+				$startdate = $event->startDate;
+				$description = $event->description;
+				$img = $event->image[2];
+				$url = $event->url;
+				$website = $event->website;
+				$tickets = $event->ticket; // not being used, empty in most
+				$tags = $event->tags->tag;
+				
+				// Turn the time into a 12-hour format
+				preg_match('/\d{2}[:]\d{2}[:]\d{2}/',$startdate,$time);
+				list($fullhour,$minute,$second) = explode(":",$time[0]);
+				if($fullhour > 12){
+					$hour = ($fullhour - 12) . ":" . $minute . " PM";
+				}else{
+					$hour = $fullhour . " AM";
+				}
+								
+				// Delete time from startdate var
+				$date = preg_replace('/\d{2}[:]\d{2}[:]\d{2}/','',$startdate);
+				$date = preg_replace('/[,]/','',$date);
+				$date = preg_replace('/(Mon|Tue|Wed|Thu|Fri|Sat|Sun)/','',$date);
+				$date = trim($date);
+				list($day,$month,$year) = explode(" ",$date);
+				$date = $month . " " . $day . ", " . $year;
+								
+				// echo the info
+				if($event->image){
+					echo '<p><img src="' . $img . '" alt="' . $title . '" /></p>';
+				}
+				echo '<p>Event: <a href="' . $url . '"><b>' . $title . '</b></a></p>';
+				echo '<p>Headlining: <b>' . $headline . '</b></p>';
+				if($event->description){
+					echo '<p>' . $description . '</p>';
+				}
+				echo '<p>All Acts:</p><ul>';
+				foreach($artists as $artist){
+					echo '<li>' . $artist . '</li>';
+				}
+				echo '</ul>';
+				if($event->venue->website){
+					echo '<p>Venue: <a href="' . $venueWebsite . '"><b>' . $venue . '</b></a></p>';
+				}elseif($event->venue->url){
+					echo '<p>Venue: <a href="' . $venueUrl . '"><b>' . $venue . '</b></a></p>';
+				}else{
+					echo '<p>Venue: ' . $venue . '</p>';
+				}
+				echo '<p>Location: ' . $location . '</p>';
+				echo '<p>Date: ' . $date . ' ' . $hour . '</p>';
+				if($event->tags){
+					echo '<p>Event Tags:</p>';
+					echo '<ul>';
+					foreach($tags as $tag){
+						echo '<li>' . $tag . '</p>';
+					}
+					echo '</ul>';
+				}
+				echo '<hr />';
+			}
+		}else{
+			echo " There are no nearby events.";
+		}
+	}
 }
 ?>
