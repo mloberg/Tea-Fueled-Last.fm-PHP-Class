@@ -26,17 +26,19 @@ This was a class I created for last.fm's API. Not all of Last.fm's API calls are
 4. Get Library Tracks
 5. Get Library Artists
 6. Get Library Albums
+7. Get User Events
 
 ***
 
 ##To Do:
 
-* In getRecent() function, see if the track is currently playing
+* In getUserRecent() function, see if the track is currently playing
 * Add more API calls
 * Allow for options to be passed
    * Such as return as list or array instead of paragraph
 * Add styling to returned paragraphs
 * Add width and height to all images
+* Styling for Get User Events is messy
 
 ***
 
@@ -44,8 +46,9 @@ This was a class I created for last.fm's API. Not all of Last.fm's API calls are
 
 ### 0.3
 
-* Updated current method names
+* Changed current method names
 * Added library calls
+* Added user.getEvents
 
 ### 0.2
 

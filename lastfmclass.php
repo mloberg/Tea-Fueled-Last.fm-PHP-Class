@@ -1,20 +1,22 @@
 <?php
-/*
-	Name: Tea-Fueled Last.fm PHP Class
-	Author: Matthew Loberg
-	URL: http://mloberg.com/blog/lastfmclass/
-	Author URL: http://mloberg.com
-	Version: 0.3
-	License: Copyright 2010 Matthew Loberg. Licenced under the MIT licence. More information in licence.txt, readme.txt, and at http://creativecommons.org/licenses/MIT/
-	.
-	This is a last.fm class I created for making API calls to last.fm.
-	Currently only a limited number of API calls are supported right now, but I hope to add more.
-	.
-*/
+/*************************
+**	Name: Tea-Fueled Last.fm PHP Class
+**	Author: Matthew Loberg
+**	URL: http://mloberg.com/blog/lastfmclass/
+**	Author URL: http://mloberg.com
+**	Version: 0.3
+**	License: Copyright 2010 Matthew Loberg. Licenced under the MIT licence. More information in licence.txt, readme.txt, and at http://creativecommons.org/licenses/MIT/
+**	
+**	This is a last.fm class I created for making API calls to last.fm.
+**	Currently only a limited number of API calls are supported right now with more being added.
+**	
+*************************/
 
 class lastFM{
 
-	// Set "global" parameters
+	/************************
+		GLOBAL VARIABLES
+	************************/
 	public $url = 'http://ws.audioscrobbler.com/2.0/';
 	public $apikey;
 	public $user;
@@ -43,11 +45,11 @@ class lastFM{
 			
 			// echo out the track info
 			
-			/*
-				Some tracks do not include an album image,
-				so we do a check to see if there is an image tag in the xml.
-				If there is, echo $img.
-			*/
+			/**
+			*	Some tracks do not include an album image,
+			*	so we do a check to see if there is an image tag in the xml.
+			*	If there is, echo $img.
+			**/
 			if($track->image){
 				echo '<p><img src="' . $img . '" alt="' . $name . '" width="126" height="126" /></p>';
 			}
@@ -55,26 +57,25 @@ class lastFM{
 		}
 	}
 	
-	/*
-		user.getRecentTracks has muliple optional parameters,
-		limit, to, and from. More info here, http://www.last.fm/api/show?service=278
-		In this method, all parameters are optional, so you can use it as it.
-		The two optional parameters are limit, and time back.
-		The time back parameter is specified in days.
-		One "bug" is if you want to specify the time back, you must also specify a limit.
-		You could pass nothing ('') or -1 as a limit to get all.
-	*/
+	/**
+	*	user.getRecentTracks has muliple optional parameters,
+	*	limit, to, and from. More info here, http://www.last.fm/api/show?service=278
+	*	In this method, all parameters are optional, so you can use it as it.
+	*	The two optional parameters are limit, and time back.
+	*	The time back parameter is specified in days.
+	*	One "bug" is if you want to specify the time back, you must also specify a limit.
+	*	You could pass nothing ('') or -1 as a limit to get all.
+	**/
 	   
 	public function getUserRecent($l='',$t=''){
 		// set the parameters if any were passed
 		$limit = $l;
 		$timeBack = $t;
 		
-		/*
-			Last.fm to and from needs to be specified in UNIX timestamp format in the UTC time zone.
-			Since we are specifying the time back (in days), we can set to as the current time stamp.
-			
-		*/
+		/**
+		*	Last.fm to and from needs to be specified in UNIX timestamp format in the UTC time zone.
+		*	Since we are specifying the time back (in days), we can set to as the current time stamp.	
+		**/
 		
 		// set the timezone to UTC
 		date_default_timezone_set('UTC');
@@ -133,15 +134,99 @@ class lastFM{
 			
 			// echo track info
 			
-			/*
-				Some tracks do not include an album image,
-				so we do a check to see if there is an image tag in the xml.
-				If there is, echo $img.
-			*/
+			/**
+			*	Some tracks do not include an album image,
+			*	so we do a check to see if there is an image tag in the xml.
+			*	If there is, echo $img.
+			**/
 			if($track->image){
 				echo '<p><img src="' . $img . '" alt="' . $name . '" width="126" height="126" /></p>';
 			}
 			echo '<p><a href="http://' . $url . '">' . $name . '</a> by ' . $artist . '</p>';
+		}
+	}
+	
+	public function getUserEvents(){
+		/**
+		*	This api call is a little weird.
+		*	An event has a lot of tags, but not all have to filled in.
+		*	This makes sytling the response difficult
+		**/
+		$lastfm = $this->url . '?method=user.getevents&user=' . $this->user . '&api_key=' . $this->apikey;
+		// get the xml file
+		$xml = simplexml_load_file($lastfm);
+		
+		$events = $xml->events->event;
+		
+		// check to see if there are any events
+		if($events){
+			foreach($events as $event){
+				// get event information
+				$title = $event->title;
+				$artists = $event->artists->artist;
+				$headline = $event->artists->headliner;
+				$venue = $event->venue->name;
+				$location = $event->venue->location->city;
+				$venueUrl = $event->venue->url;
+				$venueWebsite = $event->venue->website;
+				$startdate = $event->startDate;
+				$description = $event->description;
+				$img = $event->image[2];
+				$url = $event->url;
+				$website = $event->website;
+				$tickets = $event->ticket; // not being used, empty in most
+				$tags = $event->tags->tag;
+				
+				// Turn the time into a 12-hour format
+				preg_match('/\d{2}[:]\d{2}[:]\d{2}/',$startdate,$time);
+				list($fullhour,$minute,$second) = explode(":",$time[0]);
+				if($fullhour > 12){
+					$hour = ($fullhour - 12) . ":" . $minute . " PM";
+				}else{
+					$hour = $fullhour . " AM";
+				}
+								
+				// Delete time from startdate var
+				$date = preg_replace('/\d{2}[:]\d{2}[:]\d{2}/','',$startdate);
+				$date = preg_replace('/[,]/','',$date);
+				$date = preg_replace('/(Mon|Tue|Wed|Thu|Fri|Sat|Sun)/','',$date);
+				$date = trim($date);
+				list($day,$month,$year) = explode(" ",$date);
+				$date = $month . " " . $day . ", " . $year;
+								
+				// echo the info
+				if($event->image){
+					echo '<p><img src="' . $img . '" alt="' . $title . '" /></p>';
+				}
+				echo '<p>Event: <a href="' . $url . '"><b>' . $title . '</b></a></p>';
+				echo '<p>Headlining: <b>' . $headline . '</b></p>';
+				if($event->description){
+					echo '<p>' . $description . '</p>';
+				}
+				echo '<p>All Acts:</p><ul>';
+				foreach($artists as $artist){
+					echo '<li>' . $artist . '</li>';
+				}
+				echo '</ul>';
+				if($event->venue->website){
+					echo '<p>Venue: <a href="' . $venueWebsite . '"><b>' . $venue . '</b></a></p>';
+				}else{
+					echo '<p>Venue: <a href="' . $venueUrl . '"><b>' . $venue . '</b></a></p>';
+				}
+				echo '<p>Location: ' . $location . '</p>';
+				echo '<p>Date: ' . $date . ' ' . $hour . '</p>';
+				if($event->tags){
+					echo '<p>Event Tags:</p>';
+					echo '<ul>';
+					foreach($tags as $tag){
+						echo '<li>' . $tag . '</p>';
+					}
+					echo '</ul>';
+				}
+				echo '<hr />';
+			}
+		}else{
+			echo $this->user . " has no upcoming events.";
 		}
 	}
 	
@@ -250,8 +335,7 @@ class lastFM{
 			}
 			echo '<p><a href="' . $url . '">' . $name . '</a> by <a href="' . $artisturl . '">' . $artist . '</a> ' . $playcount . '</p>';
 		}
-		
 	}
-
+	
 }
 ?>
