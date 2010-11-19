@@ -18,8 +18,13 @@ class lastFM{
 		GLOBAL VARIABLES
 	************************/
 	public $url = 'http://ws.audioscrobbler.com/2.0/';
-	public $apikey;
-	public $user;
+	protected $apikey;
+	protected $user;
+	
+	function __construct($api,$user){
+		$this->apikey = $api;
+		$this->user = $user;
+	}
 	
 	/************************
 		USER METHODS

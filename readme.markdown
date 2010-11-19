@@ -40,6 +40,7 @@ This was a class I created for last.fm's API. Not all of Last.fm's API calls are
 * Add styling to returned paragraphs
 * Add width and height to all images
 * Styling for Get User Events is messy
+* Documentation outdated, update it
 
 ***
 
@@ -51,6 +52,7 @@ This was a class I created for last.fm's API. Not all of Last.fm's API calls are
 * Added library calls
 * Added user.getEvents
 * Added geo.getEvents
+* Added __construct function
 
 ### 0.2
 
