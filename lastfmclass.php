@@ -17,9 +17,9 @@ class lastFM{
 	/************************
 		GLOBAL VARIABLES
 	************************/
-	public $url = 'http://ws.audioscrobbler.com/2.0/';
-	protected $apikey;
-	protected $user;
+	protected $url = 'http://ws.audioscrobbler.com/2.0/';
+	private $apikey;
+	private $user;
 	
 	function __construct($api,$user){
 		$this->apikey = $api;
@@ -30,7 +30,7 @@ class lastFM{
 		USER METHODS
 	************************/
 	
-	public function getUserLoved($l=''){
+	function getUserLoved($l=''){
 		// set the parameters if any were passed
 		$limit = $l;
 		// build the url
@@ -72,7 +72,7 @@ class lastFM{
 	*	You could pass nothing ('') or -1 as a limit to get all.
 	**/
 	   
-	public function getUserRecent($l='',$t=''){
+	function getUserRecent($l='',$t=''){
 		// set the parameters if any were passed
 		$limit = $l;
 		$timeBack = $t;
@@ -120,7 +120,7 @@ class lastFM{
 		}
 	}
 	
-	public function getUserBanned($l=''){
+	function getUserBanned($l=''){
 		// set the parameters if any were passed
 		$limit = $l;
 		// build the api url
@@ -151,7 +151,7 @@ class lastFM{
 		}
 	}
 	
-	public function getUserEvents(){
+	function getUserEvents(){
 		/**
 		*	This api call is a little weird.
 		*	An event has a lot of tags, but not all have to filled in.
@@ -235,11 +235,57 @@ class lastFM{
 		}
 	}
 	
+	function getUserFriends($l=''){
+		$limit = $l;
+		// build the api url
+		$lastfm = $this->url . '?method=user.getfriends&user=' $this->user . '&limit=' . $limit . '&api_key=' . $this->apikey;
+		// get the xml file
+		$xml = simplexml_load_file($lastfm);
+		
+		$users = $xml->friends->user;
+		foreach($users as $user){
+			// gather info
+			$name = $user->name;
+			$realname = $user->realname;
+			$img = $user->image[2];
+			$url = $user->url;
+			
+			if($user->image){
+				echo "<p><img src=\"$img\" alt=\"$name\" />";
+			}
+			echo "<p><a href=\"$url\">$name ($realname)</a></p>";
+		}
+	}
+	
+	function getUserInfo(){
+		
+	}
+	
+	function getUserPlaylists(){
+		
+	}
+	
+	function getUserShouts(){
+		
+	}
+	
+	function getUserTopAlbums(){
+		
+	}
+	
+	function getUserTopArtists(){
+		
+	}
+	
+	function getFriendsRecent(){
+	
+	}
+	
 	/************************
 		LIBRARY METHODS
 	************************/
 	
-	public function getLibraryTracks($l=''){
+	function getLibraryTracks($l=''){
 		// set the parameters if any were passed
 		$limit = $l;
 		// build the api url
@@ -275,7 +321,7 @@ class lastFM{
 		}
 	}
 	
-	public function getLibraryArtists($l=''){
+	function getLibraryArtists($l=''){
 		// set the parameters if any were passed
 		$limit = $l;
 		// build the api url
@@ -308,7 +354,7 @@ class lastFM{
 		}
 	}
 	
-	public function getLibraryAlbums($l=''){
+	function getLibraryAlbums($l=''){
 		// set the parameters if any were passed
 		$limit = $l;
 		// build the api url
@@ -346,7 +392,7 @@ class lastFM{
 		GEO CALLS
 	************************/
 
-	public function getNearbyEvents($l=''){
+	function getNearbyEvents($l=''){
 		/************
 		 If you do not specify a location, you will recive all events,
 		 to fix this I am using geoplugin (http://geoplugin.com) to get the
