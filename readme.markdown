@@ -18,16 +18,7 @@ Understandable Licence: http://creativecommons.org/licenses/MIT/
 
 ## About
 
-This was a class I created for last.fm's API. Not all of Last.fm's API calls are supported at this time. Only these are supported.
-
-1. Get Loved Tracks
-2. Get Recent Tracks
-3. Get Banned Tracks
-4. Get Library Tracks
-5. Get Library Artists
-6. Get Library Albums
-7. Get User Events
-8. Get Geo Events
+This was a class I created for last.fm's API. Not all of Last.fm's API calls are supported at this time. Check the source for the supported API calls.
 
 ***
 
@@ -35,12 +26,8 @@ This was a class I created for last.fm's API. Not all of Last.fm's API calls are
 
 * In getUserRecent() function, see if the track is currently playing
 * Add more API calls
-* Allow for options to be passed
-   * Such as return as list or array instead of paragraph
-* Add styling to returned paragraphs
-* Add width and height to all images
-* Styling for Get User Events is messy
-* Documentation outdated, update it
+* Pass calls back as an array, rather then echo them directly
+* Document
 
 ***
 
@@ -53,6 +40,7 @@ This was a class I created for last.fm's API. Not all of Last.fm's API calls are
 * Added user.getEvents
 * Added geo.getEvents
 * Added __construct function
+* Some methods pass an array back, rather then echo the results directly
 
 ### 0.2
 

@@ -258,7 +258,7 @@ class lastFM{
 	}
 	
 	function getUserInfo($user=''){
-		/* this method returns an array */
+		/* RETURNS AN ARRAY */
 		// if $user is not defined, use the set up user
 		if($user == ''){
 			$user = $this->user;
@@ -289,20 +289,54 @@ class lastFM{
 	}
 	
 	function getUserPlaylists(){
+		/* RETURNS AN ARRAY */
 		// build the api url
 		$lastfm = $this->url . '?method=user.getplaylists&user=' . $this->user . '&api_key=' . $this->apikey;
 		// get the xml file
 		$xml = simplexml_load_file($lastfm);
 		
 		$playlists = $xml->playlists->playlist;
+		
+		$i = 0;
+		$info = array();
 		foreach($playlists as $playlist){
-			$title = $playlist->title;
-			echo "<p>$title</p>";
+			$info[$i] = array(
+				'title' => $playlist->title,
+				'description' => $playlist->description,
+				'size' => $playlist->size,
+				'duration' => $playlist->duration,
+				'url' => $playlist->url,
+				'img' => $playlist->image[2],
+				'creator' => $playlist->creator
+			);
+			
+			$i++;
 		}
+		
+		return $info;
 	}
 	
 	function getUserShouts(){
+		/* RETURNS AN ARRAY */
+		// build the api url
+		$lastfm = $this->url . '?method=user.getshouts&user=' . $this->user . '&api_key=' . $this->apikey;
+		// get the xml file
+		$xml = simplexml_load_file($lastfm);
 		
+		$shouts = $xml->shouts->shout;
+		$info = array();
+		$i = 0;
+		foreach($shouts as $shout){
+			$info[$i] = array(
+				'body' => $shout->body,
+				'author' => $shout->author,
+				'date' => $shout->date
+			);
+			
+			$i++;
+		}
+		
+		return $info;
 	}
 	
 	function getUserTopAlbums(){
