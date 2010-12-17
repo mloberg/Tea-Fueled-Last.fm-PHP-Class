@@ -257,14 +257,10 @@ class lastFM{
 		}
 	}
 	
-	function getUserInfo($user=''){
+	function getUserInfo(){
 		/* RETURNS AN ARRAY */
-		// if $user is not defined, use the set up user
-		if($user == ''){
-			$user = $this->user;
-		}
 		// build the api url
-		$lastfm = $this->url . '?method=user.getinfo&user=' . $user . '&api_key=' . $this->apikey;
+		$lastfm = $this->url . '?method=user.getinfo&user=' . $this->user . '&api_key=' . $this->apikey;
 		// get the xml file
 		$xml = simplexml_load_file($lastfm);
 		
@@ -340,7 +336,33 @@ class lastFM{
 	}
 	
 	function getUserTopAlbums(){
+		/* RETURNS AN ARRAY */
 		
+		/********************
+		Need to add optional time period
+		********************/
+		// build the api url
+		$lastfm = $this->url . '?method=user.gettopalbums&user=' . $this->user . '&api_key=' . $this->apikey;
+		// get the xml file
+		$xml = simplexml_load_file($lastfm);
+		
+		$albums = $xml->topalbums->album;
+		$info = array();
+		$i = 0;
+		foreach($albums as $album){
+			$info[$i] = array(
+				'name' => $album->name,
+				'artist' => $album->artist->name,
+				'artist_url' => $album->artist->url,
+				'url' => $album->url,
+				'img' => $album->image[2],
+				'playcount' => $album->playcount
+			);
+			
+			$i++;
+		}
+		
+		return $info;
 	}
 	
 	function getUserTopArtists(){
