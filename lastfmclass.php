@@ -17,7 +17,7 @@ class lastFM{
 	/************************
 		GLOBAL VARIABLES
 	************************/
-	protected $url = 'http://ws.audioscrobbler.com/2.0/';
+	private $url = 'http://ws.audioscrobbler.com/2.0/';
 	private $apikey;
 	private $user;
 	
@@ -238,7 +238,7 @@ class lastFM{
 	function getUserFriends($l=''){
 		$limit = $l;
 		// build the api url
-		$lastfm = $this->url . '?method=user.getfriends&user=' $this->user . '&limit=' . $limit . '&api_key=' . $this->apikey;
+		$lastfm = $this->url . '?method=user.getfriends&user=' . $this->user . '&limit=' . $limit . '&api_key=' . $this->apikey;
 		// get the xml file
 		$xml = simplexml_load_file($lastfm);
 		
@@ -257,12 +257,48 @@ class lastFM{
 		}
 	}
 	
-	function getUserInfo(){
+	function getUserInfo($user=''){
+		/* this method returns an array */
+		// if $user is not defined, use the set up user
+		if($user == ''){
+			$user = $this->user;
+		}
+		// build the api url
+		$lastfm = $this->url . '?method=user.getinfo&user=' . $user . '&api_key=' . $this->apikey;
+		// get the xml file
+		$xml = simplexml_load_file($lastfm);
 		
+		$user = $xml->user;
+		/**
+		 * Because this only returns a single result, we don't have to loop
+		 */
+		
+		$info['name'] = $user->name;
+		$info['realname'] = $user->realname;
+		$info['img'] = $user->image[2];
+		$info['url'] = $user->url;
+		$info['country'] = $user->country;
+		$info['age'] = $user->age;
+		$info['gender'] = $user->gender;
+		$info['playcount'] = $user->playcount;
+		$info['playlists'] = $user->playlists;
+		$info['registered'] = $user->registered;
+		
+		// and finally send the info
+		return $info;
 	}
 	
 	function getUserPlaylists(){
+		// build the api url
+		$lastfm = $this->url . '?method=user.getplaylists&user=' . $this->user . '&api_key=' . $this->apikey;
+		// get the xml file
+		$xml = simplexml_load_file($lastfm);
 		
+		$playlists = $xml->playlists->playlist;
+		foreach($playlists as $playlist){
+			$title = $playlist->title;
+			echo "<p>$title</p>";
+		}
 	}
 	
 	function getUserShouts(){
