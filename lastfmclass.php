@@ -366,11 +366,88 @@ class lastFM{
 	}
 	
 	function getUserTopArtists(){
+		/* RETURNS AN ARRAY */
 		
+		/********************
+		Need to add optional time period
+		********************/
+		// build the api url
+		$lastfm = $this->url . '?method=user.gettopartists&user=' . $this->user . '&api_key=' . $this->apikey;
+		// get the xml file
+		$xml = simplexml_load_file($lastfm);
+		
+		$artists = $xml->topartists->artist;
+		$info = array();
+		$i = 0;
+		foreach($artists as $artist){
+			$info[$i] = array(
+				'name' => $artist->name,
+				'url' => $artist->url,
+				'img' => $artist->image[2],
+				'playcount' => $artist->playcount
+			);
+			
+			$i++;
+		}
+		
+		return $info;
 	}
 	
-	function getFriendsRecent(){
+	function getUserTopTags(){
+		/* RETURNS AN ARRAY */
+		
+		/********************
+		Need to add optional time period
+		********************/
+		// build the api url
+		$lastfm = $this->url . '?method=user.gettoptags&user=' . $this->user . '&api_key=' . $this->apikey;
+		// get the xml file
+		$xml = simplexml_load_file($lastfm);
+		
+		$tags = $xml->toptags->tag;
+		$info = array();
+		$i = 0;
+		foreach($tags as $tag){
+			$info[$i] = array(
+				'name' => $tag->name,
+				'count' => $tag->count,
+				'url' => $tag->url
+			);
+			
+			$i++;
+		}
+		
+		return $info;
+	}
 	
+	function getUserTopTracks(){
+		/* RETURNS AN ARRAY */
+		
+		/********************
+		Need to add optional time period
+		********************/
+		// build the api url
+		$lastfm = $this->url . '?method=user.gettoptracks&user=' . $this->user . '&api_key=' . $this->apikey;
+		// get the xml file
+		$xml = simplexml_load_file($lastfm);
+		
+		$tracks = $xml->toptracks->track;
+		$info = array();
+		$i = 0;
+		foreach($tracks as $track){
+			$info[$i] = array(
+				'name' => $track->name,
+				'artist' => $track->artist->name,
+				'artist_url' => $track->artist->url,
+				'playcount' => $track->playcount,
+				'url' => $track->url,
+				'img' => $track->image[2]
+			);
+			
+			$i++;
+		}
+		
+		return $info;
 	}
 	
 	/************************

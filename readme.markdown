@@ -25,6 +25,7 @@ This was a class I created for last.fm's API. Not all of Last.fm's API calls are
 ##To Do:
 
 * In getUserRecent() function, see if the track is currently playing
+* In User.getTop calls, get the rank
 * Add more API calls
 * Pass calls back as an array, rather then echo them directly
 * Document
