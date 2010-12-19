@@ -6,7 +6,7 @@ Version 0.3
 
 Author: Matthew Loberg
 
-URL: http://mloberg.com/blog/lastfmclass/
+URL: http://mloberg.com/blog/lastfmclass/ *New URL coming soon, but for now, check out the wiki*
 
 Author URL: http://mloberg.com
 
