@@ -34,17 +34,7 @@ This was a class I created for last.fm's API. Not all of Last.fm's API calls are
 
 ## Changelog:
 
-<<<<<<< HEAD
-### 0.2
-
-* More in file documentation
-* Added limit as optional parameter to all existing methods
-* Added time back parameter to getRecent()
-
-### 0.1
-=======
 ### 0.3
->>>>>>> testing
 
 * Changed current method names
 * Added library calls
@@ -53,11 +43,6 @@ This was a class I created for last.fm's API. Not all of Last.fm's API calls are
 * Added __construct function
 * Some methods pass an array back, rather then echo the results directly
 
-<<<<<<< HEAD
-***
-
-##To Do:
-=======
 ### 0.2
 
 * More in file documentation
@@ -65,7 +50,6 @@ This was a class I created for last.fm's API. Not all of Last.fm's API calls are
 * Added time back parameter to getRecent()
 
 ### 0.1
->>>>>>> testing
 
 * Created class
 * Added user.getLovedTracks
