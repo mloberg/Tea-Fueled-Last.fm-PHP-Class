@@ -2,11 +2,11 @@
 
 Name: Tea-Fueled Last.fm PHP Class
 
-Version 0.2
+Version 0.3
 
 Author: Matthew Loberg
 
-URL: http://mloberg.com/blog/lastfmclass/
+URL: http://mloberg.com/blog/lastfmclass/ *New URL coming soon, but for now, check out the wiki*
 
 Author URL: http://mloberg.com
 
@@ -18,18 +18,23 @@ Understandable Licence: http://creativecommons.org/licenses/MIT/
 
 ## About
 
-This was a class I created for last.fm's API. Currently only three calls are supported.
+This was a class I created for last.fm's API. Not all of Last.fm's API calls are supported at this time. Check the source for the supported API calls.
 
-1. Get Loved Tracks
-2. Get Recent Tracks
-3. Get Banned Tracks
+***
 
-**More documentation will be coming.** I just created this, and I'm still working on the details and stuff.
+##To Do:
+
+* In getUserRecent() function, see if the track is currently playing
+* In User.getTop calls, get the rank
+* Add more API calls
+* Pass calls back as an array, rather then echo them directly
+* Document
 
 ***
 
 ## Changelog:
 
+<<<<<<< HEAD
 ### 0.2
 
 * More in file documentation
@@ -37,18 +42,32 @@ This was a class I created for last.fm's API. Currently only three calls are sup
 * Added time back parameter to getRecent()
 
 ### 0.1
+=======
+### 0.3
+>>>>>>> testing
+
+* Changed current method names
+* Added library calls
+* Added user.getEvents
+* Added geo.getEvents
+* Added __construct function
+* Some methods pass an array back, rather then echo the results directly
+
+<<<<<<< HEAD
+***
+
+##To Do:
+=======
+### 0.2
+
+* More in file documentation
+* Added limit as optional parameter to all existing methods
+* Added time back parameter to getRecent()
+
+### 0.1
+>>>>>>> testing
 
 * Created class
 * Added user.getLovedTracks
 * Added user.getRecentTracks
 * Added user.getBannedTracks
-
-***
-
-##To Do:
-
-* In getRecent() function, see if the track is currently playing
-* Add more API calls
-* Allow for options to be passed
-   * Such as return as list instead of paragraph
-   * Define the number of tracks returned
