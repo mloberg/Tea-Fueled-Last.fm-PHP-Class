@@ -34,8 +34,6 @@ This was a class I created for last.fm's API. Not all of Last.fm's API calls are
 
 ## Changelog:
 
-=======
-
 ### 0.4
 
 * Added user.getWeeklyChart methods
