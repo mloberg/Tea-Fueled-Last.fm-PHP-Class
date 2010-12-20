@@ -4,7 +4,7 @@
 **	Author: Matthew Loberg
 **	URL: http://mloberg.com/blog/lastfmclass/
 **	Author URL: http://mloberg.com
-**	Version: 0.3
+**	Version: 0.4
 **	License: Copyright 2010 Matthew Loberg. Licenced under the MIT licence. More information in licence.txt, readme.txt, and at http://creativecommons.org/licenses/MIT/
 **	
 **	This is a last.fm class I created for making API calls to last.fm.
@@ -30,7 +30,7 @@ class lastFM{
 		USER METHODS
 	************************/
 	
-	function getUserLoved($l=''){
+	function userLoved($l=''){
 		// set the parameters if any were passed
 		$limit = $l;
 		// build the url
@@ -39,27 +39,21 @@ class lastFM{
 		$xml = simplexml_load_file($lastfm);
 		
 		$tracks = $xml->lovedtracks->track;
+		$info = array();
+		$i = 0;
 		foreach($tracks as $track){
-			// gather track info
-			$name = $track->name;
-			$url = $track->url;
-			$artist = $track->artist->name;
-			$artisturl = $track->artist->url;
-			$img = $track->children();
-			$img = $img->image[2];
+			$info[$i] = array(
+				'name' => $track->name,
+				'url' => $track->url,
+				'artist' => $track->artist->name,
+				'artisturl' => $track->artist->url,
+				'img' => $track->image[2]
+			);
 			
-			// echo out the track info
-			
-			/**
-			*	Some tracks do not include an album image,
-			*	so we do a check to see if there is an image tag in the xml.
-			*	If there is, echo $img.
-			**/
-			if($track->image){
-				echo '<p><img src="' . $img . '" alt="' . $name . '" width="126" height="126" /></p>';
-			}
-			echo '<p><a href="http://' . $url . '">' . $name . '</a> by <a href="' . $artisturl . '">' . $artist . '</a></p>';
+			$i++;
 		}
+		
+		return $info;
 	}
 	
 	/**
@@ -72,7 +66,7 @@ class lastFM{
 	*	You could pass nothing ('') or -1 as a limit to get all.
 	**/
 	   
-	function getUserRecent($l='',$t=''){
+	function userRecent($l='',$t=''){
 		// set the parameters if any were passed
 		$limit = $l;
 		$timeBack = $t;
@@ -102,25 +96,24 @@ class lastFM{
 		$xml = simplexml_load_file($lastfm);
 		
 		$tracks = $xml->recenttracks->track;
+		$info = array();
+		$i = 0;
 		foreach($tracks as $track){
-			// gather track info
-			$name = $track->name;
-			$url = $track->url;
-			$artist = $track->artist;
-			$album = $track->album;
-			$img = $track->children();
-			$img = $img->image[2];
+			$info[$i] = array(
+				'name' => $track->name,
+				'url' => $track->url,
+				'artist' => $track->artist,
+				'album' => $track->album,
+				'img' => $track->image[2]
+			);
 			
-			// echo track info
-			// make sure it has an image before echoing an image
-			if($track->image){
-				echo '<p><img src="' . $img . '" alt="' . $album . '" width="126" height="126" /></p>';
-			}
-			echo '<p><a href="' . $url . '">' . $name . '</a> off <em>' . $album . '</em> by ' . $artist . '</p>';
+			$i++;
 		}
+		
+		return $info;
 	}
 	
-	function getUserBanned($l=''){
+	function userBanned($l=''){
 		// set the parameters if any were passed
 		$limit = $l;
 		// build the api url
@@ -129,113 +122,75 @@ class lastFM{
 		$xml = simplexml_load_file($lastfm);
 
 		$tracks = $xml->bannedtracks->track;
+		$info = array();
+		$i = 0;
 		foreach($tracks as $track){
-			// gather track info
-			$name = $track->name;
-			$url = $track->url;
-			$artist = $track->artist->name;
-			$img = $track->children();
-			$img = $img->image[2];
+			$info[$i] = array(
+				'name' => $track->name,
+				'url' => $track->url,
+				'artist' => $track->artist->name,
+				'img' => $track->image[2],
+			);
 			
-			// echo track info
-			
-			/**
-			*	Some tracks do not include an album image,
-			*	so we do a check to see if there is an image tag in the xml.
-			*	If there is, echo $img.
-			**/
-			if($track->image){
-				echo '<p><img src="' . $img . '" alt="' . $name . '" width="126" height="126" /></p>';
-			}
-			echo '<p><a href="http://' . $url . '">' . $name . '</a> by ' . $artist . '</p>';
+			$i++;
 		}
+		
+		return $info;
 	}
 	
-	function getUserEvents(){
-		/**
-		*	This api call is a little weird.
-		*	An event has a lot of tags, but not all have to filled in.
-		*	This makes sytling the response difficult
-		**/
+	function userEvents(){
+		// build the api url
 		$lastfm = $this->url . '?method=user.getevents&user=' . $this->user . '&api_key=' . $this->apikey;
 		// get the xml file
 		$xml = simplexml_load_file($lastfm);
 		
 		$events = $xml->events->event;
-		
-		// check to see if there are any events
-		if($events){
-			foreach($events as $event){
-				// get event information
-				$title = $event->title;
-				$artists = $event->artists->artist;
-				$headline = $event->artists->headliner;
-				$venue = $event->venue->name;
-				$location = $event->venue->location->city;
-				$venueUrl = $event->venue->url;
-				$venueWebsite = $event->venue->website;
-				$startdate = $event->startDate;
-				$description = $event->description;
-				$img = $event->image[2];
-				$url = $event->url;
-				$website = $event->website;
-				$tickets = $event->ticket; // not being used, empty in most
-				$tags = $event->tags->tag;
-				
-				// Turn the time into a 12-hour format
-				preg_match('/\d{2}[:]\d{2}[:]\d{2}/',$startdate,$time);
-				list($fullhour,$minute,$second) = explode(":",$time[0]);
-				if($fullhour > 12){
-					$hour = ($fullhour - 12) . ":" . $minute . " PM";
-				}else{
-					$hour = $fullhour . " AM";
-				}
-								
-				// Delete time from startdate var
-				$date = preg_replace('/\d{2}[:]\d{2}[:]\d{2}/','',$startdate);
-				$date = preg_replace('/[,]/','',$date);
-				$date = preg_replace('/(Mon|Tue|Wed|Thu|Fri|Sat|Sun)/','',$date);
-				$date = trim($date);
-				list($day,$month,$year) = explode(" ",$date);
-				$date = $month . " " . $day . ", " . $year;
-								
-				// echo the info
-				if($event->image){
-					echo '<p><img src="' . $img . '" alt="' . $title . '" /></p>';
-				}
-				echo '<p>Event: <a href="' . $url . '"><b>' . $title . '</b></a></p>';
-				echo '<p>Headlining: <b>' . $headline . '</b></p>';
-				if($event->description){
-					echo '<p>' . $description . '</p>';
-				}
-				echo '<p>All Acts:</p><ul>';
-				foreach($artists as $artist){
-					echo '<li>' . $artist . '</li>';
-				}
-				echo '</ul>';
-				if($event->venue->website){
-					echo '<p>Venue: <a href="' . $venueWebsite . '"><b>' . $venue . '</b></a></p>';
-				}else{
-					echo '<p>Venue: <a href="' . $venueUrl . '"><b>' . $venue . '</b></a></p>';
-				}
-				echo '<p>Location: ' . $location . '</p>';
-				echo '<p>Date: ' . $date . ' ' . $hour . '</p>';
-				if($event->tags){
-					echo '<p>Event Tags:</p>';
-					echo '<ul>';
-					foreach($tags as $tag){
-						echo '<li>' . $tag . '</p>';
-					}
-					echo '</ul>';
-				}
-				echo '<hr />';
+		$info = array();
+		$i = 0;
+		foreach($events as $event){
+			// Turn the time into a 12-hour format
+			preg_match('/\d{2}[:]\d{2}[:]\d{2}/',$event->startDate,$time);
+			list($fullhour,$minute,$second) = explode(":",$time[0]);
+			if($fullhour > 12){
+				$hour = ($fullhour - 12) . ":" . $minute . " PM";
+			}else{
+				$hour = $fullhour . ":" . $minute . " AM";
 			}
-		}else{
-			echo $this->user . " has no upcoming events.";
+							
+			// Delete time from startdate
+			$date = preg_replace('/\d{2}[:]\d{2}[:]\d{2}/','',$event->startDate);
+			$date = preg_replace('/[,]/','',$date);
+			$date = preg_replace('/(Mon|Tue|Wed|Thu|Fri|Sat|Sun)/','',$date);
+			$date = trim($date);
+			list($day,$month,$year) = explode(" ",$date);
+			$date = $month . " " . $day . ", " . $year;
+			
+			$info[$i] = array(
+				'title' => $event->title,
+				'artists' => $event->artists->artist,
+				'headline' => $event->artists->headliner,
+				'date' => $date,
+				'time' => $hour,
+				'venue' => $event->venue->name,
+				'location' => $event->venue->location->city,
+				'venueUrl' => $event->venue->url,
+				'venueWebsite' => $event->venue->website,
+				'startdate' => $event->startDate,
+				'description' => $event->description,
+				'img' => $event->image[2],
+				'url' => $event->url,
+				'website' => $event->website,
+				'tickets' => $event->ticket,
+				'tags' => $event->tags->tag
+			);
+			
+			$i++;
 		}
+		
+		return $info;
 	}
 	
-	function getUserFriends($l=''){
+	function userFriends($l=''){
 		$limit = $l;
 		// build the api url
 		$lastfm = $this->url . '?method=user.getfriends&user=' . $this->user . '&limit=' . $limit . '&api_key=' . $this->apikey;
@@ -243,22 +198,23 @@ class lastFM{
 		$xml = simplexml_load_file($lastfm);
 		
 		$users = $xml->friends->user;
+		$info = array();
+		$i = 0;
 		foreach($users as $user){
-			// gather info
-			$name = $user->name;
-			$realname = $user->realname;
-			$img = $user->image[2];
-			$url = $user->url;
+			$info[$i] = array(
+				'name' => $user->name,
+				'realname' => $user->realname,
+				'img' => $user->image[2],
+				'url' => $user->url
+			);
 			
-			if($user->image){
-				echo "<p><img src=\"$img\" alt=\"$name\" />";
-			}
-			echo "<p><a href=\"$url\">$name ($realname)</a></p>";
+			$i++;
 		}
+		
+		return $info;
 	}
 	
-	function getUserInfo(){
-		/* RETURNS AN ARRAY */
+	function userInfo(){
 		// build the api url
 		$lastfm = $this->url . '?method=user.getinfo&user=' . $this->user . '&api_key=' . $this->apikey;
 		// get the xml file
@@ -284,8 +240,7 @@ class lastFM{
 		return $info;
 	}
 	
-	function getUserPlaylists(){
-		/* RETURNS AN ARRAY */
+	function userPlaylists(){
 		// build the api url
 		$lastfm = $this->url . '?method=user.getplaylists&user=' . $this->user . '&api_key=' . $this->apikey;
 		// get the xml file
@@ -312,8 +267,7 @@ class lastFM{
 		return $info;
 	}
 	
-	function getUserShouts(){
-		/* RETURNS AN ARRAY */
+	function userShouts(){
 		// build the api url
 		$lastfm = $this->url . '?method=user.getshouts&user=' . $this->user . '&api_key=' . $this->apikey;
 		// get the xml file
@@ -335,9 +289,7 @@ class lastFM{
 		return $info;
 	}
 	
-	function getUserTopAlbums(){
-		/* RETURNS AN ARRAY */
-		
+	function userTopAlbums(){		
 		/********************
 		Need to add optional time period
 		********************/
@@ -365,9 +317,7 @@ class lastFM{
 		return $info;
 	}
 	
-	function getUserTopArtists(){
-		/* RETURNS AN ARRAY */
-		
+	function userTopArtists(){		
 		/********************
 		Need to add optional time period
 		********************/
@@ -393,9 +343,7 @@ class lastFM{
 		return $info;
 	}
 	
-	function getUserTopTags(){
-		/* RETURNS AN ARRAY */
-		
+	function userTopTags(){		
 		/********************
 		Need to add optional time period
 		********************/
@@ -420,9 +368,7 @@ class lastFM{
 		return $info;
 	}
 	
-	function getUserTopTracks(){
-		/* RETURNS AN ARRAY */
-		
+	function userTopTracks(){
 		/********************
 		Need to add optional time period
 		********************/
@@ -450,11 +396,239 @@ class lastFM{
 		return $info;
 	}
 	
+		function userAlbumChart(){		
+		/********************
+		Need to add optional time period
+		********************/
+		// build the api url
+		$lastfm = $this->url . '?method=user.getweeklyalbumchart&user=' . $this->user . '&api_key=' . $this->apikey;
+		// get the xml file
+		$xml = simplexml_load_file($lastfm);
+		
+		$albums = $xml->weeklyalbumchart->album;
+		$info = array();
+		$i = 0;
+		foreach($albums as $album){
+			$info[$i] = array(
+				'name' => $album->name,
+				'artist' => $album->artist,
+				'url' => $album->url,
+				'playcount' => $album->playcount
+			);
+			
+			$i++;
+		}
+		
+		return $info;
+	}
+	
+	function userArtistChart(){		
+		/********************
+		Need to add optional time period
+		********************/
+		// build the api url
+		$lastfm = $this->url . '?method=user.getweeklyartistchart&user=' . $this->user . '&api_key=' . $this->apikey;
+		// get the xml file
+		$xml = simplexml_load_file($lastfm);
+		
+		$artists = $xml->weeklyartistchart->artist;
+		$info = array();
+		$i = 0;
+		foreach($artists as $artist){
+			$info[$i] = array(
+				'name' => $artist->name,
+				'url' => $artist->url,
+				'playcount' => $artist->playcount
+			);
+			
+			$i++;
+		}
+		
+		return $info;
+	}
+	
+	function userTrackChart(){		
+		/********************
+		Need to add optional time period
+		********************/
+		// build the api url
+		$lastfm = $this->url . '?method=user.getweeklytrackchart&user=' . $this->user . '&api_key=' . $this->apikey;
+		// get the xml file
+		$xml = simplexml_load_file($lastfm);
+		
+		$tracks = $xml->weeklytrackchart->track;
+		$info = array();
+		$i = 0;
+		foreach($tracks as $track){
+			$info[$i] = array(
+				'name' => $track->name,
+				'artist' => $track->artist,
+				'url' => $track->url,
+				'playcount' => $track->playcount
+			);
+			
+			$i++;
+		}
+		
+		return $info;
+	}
+	
+	/********************
+		CHART METHODS
+	********************/
+	
+	function chartHypedArtists(){
+		// build the api url
+		$lastfm = $this->url . '?method=chart.gethypedartists&api_key=' . $this->apikey;
+		// get the xml file
+		$xml = simplexml_load_file($lastfm);
+		
+		$artists = $xml->artists->artist;
+		$info = array();
+		$i = 0;
+		foreach($artists as $artist){
+			$info[$i] = array(
+				'name' => $artist->name,
+				'img' => $artist->image[2],
+				'url' => $artist->url,
+				'change' => $artist->percentchange
+			);
+			
+			$i++;
+		}
+		
+		return $info;
+	}
+	
+	function chartHypedTracks(){
+		// build the api url
+		$lastfm = $this->url . '?method=chart.gethypedtracks&api_key=' . $this->apikey;
+		// get the xml file
+		$xml = simplexml_load_file($lastfm);
+		
+		$tracks = $xml->tracks->track;
+		$info = array();
+		$i = 0;
+		foreach($tracks as $track){
+			$info[$i] = array(
+				'name' => $track->name,
+				'img' => $track->image[2],
+				'url' => $track->url,
+				'artist' => $track->artist->name,
+				'artisturl' => $track->artist->url,
+				'change' => $track->percentchange
+			);
+			
+			$i++;
+		}
+		
+		return $info;
+	}
+	
+	function chartLovedTracks(){
+		// build the api url
+		$lastfm = $this->url . '?method=chart.getlovedtracks&api_key=' . $this->apikey;
+		// get the xml file
+		$xml = simplexml_load_file($lastfm);
+		
+		$tracks = $xml->tracks->track;
+		$info = array();
+		$i = 0;
+		foreach($tracks as $track){
+			$info[$i] = array(
+				'name' => $track->name,
+				'img' => $track->image[2],
+				'url' => $track->url,
+				'artist' => $track->artist->name,
+				'artisturl' => $track->artist->url,
+				'loves' => $track->loves
+			);
+			
+			$i++;
+		}
+		
+		return $info;
+	}
+	
+	function chartTopArtists(){
+		// build the api url
+		$lastfm = $this->url . '?method=chart.gettopartists&api_key=' . $this->apikey;
+		// get the xml file
+		$xml = simplexml_load_file($lastfm);
+		
+		$artists = $xml->artists->artist;
+		$info = array();
+		$i = 0;
+		foreach($artists as $artist){
+			$info[$i] = array(
+				'name' => $artist->name,
+				'img' => $artist->image[2],
+				'url' => $artist->url,
+				'playcount' => $artist->playcount,
+				'listeners' => $artist->listeners
+			);
+			
+			$i++;
+		}
+		
+		return $info;
+	}
+	
+	function chartTopTags(){
+		// build the api url
+		$lastfm = $this->url . '?method=chart.gettoptags&api_key=' . $this->apikey;
+		// get the xml file
+		$xml = simplexml_load_file($lastfm);
+		
+		$tags = $xml->tags->tag;
+		$info = array();
+		$i = 0;
+		foreach($tags as $tag){
+			$info[$i] = array(
+				'name' => $tag->name,
+				'url' => $tag->url,
+				'reach' => $tag->reach,
+				'tags' => $tag->taggings,
+				'summary' => $tag->wiki->summary,
+				'description' => $tag->wiki->description
+			);
+			
+			$i++;
+		}
+		
+		return $info;
+	}
+	
+	function chartTopTracks(){
+		// build the api url
+		$lastfm = $this->url . '?method=chart.gettoptracks&api_key=' . $this->apikey;
+		// get the xml file
+		$xml = simplexml_load_file($lastfm);
+		
+		$tracks = $xml->tracks->track;
+		$info = array();
+		$i = 0;
+		foreach($tracks as $track){
+			$info[$i] = array(
+				'name' => $track->name,
+				'artist' => $track->artist->name,
+				'artisturl' => $track->artist->url,
+				'url' => $track->url,
+				'playcount' => $track->playcount,
+				'listeners' => $track->listeners
+			);
+			
+			$i++;
+		}
+		
+		return $info;
+	}
+	
 	/************************
 		LIBRARY METHODS
 	************************/
 	
-	function getLibraryTracks($l=''){
+	function libraryTracks($l=''){
 		// set the parameters if any were passed
 		$limit = $l;
 		// build the api url
@@ -463,34 +637,25 @@ class lastFM{
 		$xml = simplexml_load_file($lastfm);
 		
 		$tracks = $xml->tracks->track;
+		$info = array();
+		$i = 0;
 		foreach($tracks as $track){
-			// gather track info
-			$name = $track->name;
-			$url = $track->url;
-			$artist = $track->artist->name;
-			$album = $track->album->name;
-			$img = $track->children();
-			$img = $img->image[2];
-			$playcount = $track->playcount;
+			$info[$i] = array(
+				'name' => $track->name,
+				'url' => $track->url,
+				'artist' => $track->artist->name,
+				'album' => $track->album->name,
+				'img' => $track->image[2],
+				'playcount' => $track->playcount
+			);
 			
-			// if $playcount is equal to one, we need to set the playcount string to played 1 time instead of 1 times.
-			if($playcount == "1"){
-				$playcount = "Played " . $playcount . " time.";
-			}else{
-				$playcount = "Played " . $playcount . " times";
-			}
-			
-			// now echo track info
-			// make sure there is an image before echoing it
-			if($track->image){
-				echo '<p><img src="' . $img . '" alt="' . $album . '" width="126" height="126" /></p>';
-			}
-			echo '<p><a href="' . $url . '">' . $name . '</a> off <em>' . $album . '</em> by ' . $artist . '.</p>';
-			echo '<p>' . $playcount . '</p>';
+			$i++;
 		}
+		
+		return $info;
 	}
 	
-	function getLibraryArtists($l=''){
+	function libraryArtists($l=''){
 		// set the parameters if any were passed
 		$limit = $l;
 		// build the api url
@@ -499,31 +664,23 @@ class lastFM{
 		$xml = simplexml_load_file($lastfm);
 		
 		$artists = $xml->artists->artist;
+		$info = array();
+		$i = 0;
 		foreach($artists as $artist){
-			// gather artist info
-			$name = $artist->name;
-			$url = $artist->url;
-			$img = $artist->children();
-			$img = $img->image[2];
-			$playcount = $artist->playcount;
+			$info[$i] = array(
+				'name' => $artist->name,
+				'url' => $artist->url,
+				'img' => $artist->image[2],
+				'playcount' => $artist->playcount
+			);
 			
-			// if $playcount is equal to one, we need to set the playcount string to played 1 time instead of 1 times.
-			if($playcount == "1"){
-				$playcount = "played " . $playcount . " time.";
-			}else{
-				$playcount = "played " . $playcount . " times.";
-			}
-			
-			// echo the info
-			// make sure there is an image before echoing it
-			if($artist->image){
-				echo '<p><img src="' . $img . '" alt="' . $name . '" /></p>';
-			}
-			echo '<p><a href="' . $url . '">' . $name . '</a> ' . $playcount . '</p>';
+			$i++;
 		}
+		
+		return $info;
 	}
 	
-	function getLibraryAlbums($l=''){
+	function libraryAlbums($l=''){
 		// set the parameters if any were passed
 		$limit = $l;
 		// build the api url
@@ -532,36 +689,29 @@ class lastFM{
 		$xml = simplexml_load_file($lastfm);
 		
 		$albums = $xml->albums->album;
+		$info = array();
+		$i = 0;
 		foreach($albums as $album){
-			// gather album info
-			$name = $album->name;
-			$url = $album->url;
-			$artist = $album->artist->name;
-			$artisturl = $album->artist->url;
-			$img = $album->children();
-			$img = $img->image[2];
-			$playcount = $album->playcount;
+			$info = array(
+				'name' => $album->name,
+				'url' => $album->url,
+				'artist' => $album->artist->name,
+				'artisturl' => $album->artist->url,
+				'img' => $album->image[2],
+				'playcount' => $album->playcount
+			);
 			
-			// if $playcount is equal to one, we need to set the playcount string to played 1 time instead of 1 times.
-			if($playcount == "1"){
-				$playcount = 'played ' . $playcount . ' time.';
-			}else{
-				$playcount = 'played ' . $playcount . ' times.';
-			}
-			
-			// make sure there is an image before we echo it
-			if($album->image){
-				echo '<p><img src="' . $img . '" alt="' . $name . '" width="126" height="126" /></p>';
-			}
-			echo '<p><a href="' . $url . '">' . $name . '</a> by <a href="' . $artisturl . '">' . $artist . '</a> ' . $playcount . '</p>';
+			$i++;
 		}
+		
+		return $info;
 	}
 	
 	/************************
 		GEO CALLS
 	************************/
 
-	function getNearbyEvents($l=''){
+	function nearbyEvents($l=''){
 		/************
 		 If you do not specify a location, you will recive all events,
 		 to fix this I am using geoplugin (http://geoplugin.com) to get the
@@ -584,79 +734,47 @@ class lastFM{
 		$xml = simplexml_load_file($lastfm);
 		
 		$events = $xml->events->event;
-		
-		// check to see if there are any events
-		if($events){
-			foreach($events as $event){
-				// get event information
-				$title = $event->title;
-				$artists = $event->artists->artist;
-				$headline = $event->artists->headliner;
-				$venue = $event->venue->name;
-				$location = $event->venue->location->city;
-				$venueUrl = $event->venue->url;
-				$venueWebsite = $event->venue->website;
-				$startdate = $event->startDate;
-				$description = $event->description;
-				$img = $event->image[2];
-				$url = $event->url;
-				$website = $event->website;
-				$tickets = $event->ticket; // not being used, empty in most
-				$tags = $event->tags->tag;
-				
-				// Turn the time into a 12-hour format
-				preg_match('/\d{2}[:]\d{2}[:]\d{2}/',$startdate,$time);
-				list($fullhour,$minute,$second) = explode(":",$time[0]);
-				if($fullhour > 12){
-					$hour = ($fullhour - 12) . ":" . $minute . " PM";
-				}else{
-					$hour = $fullhour . " AM";
-				}
-								
-				// Delete time from startdate var
-				$date = preg_replace('/\d{2}[:]\d{2}[:]\d{2}/','',$startdate);
-				$date = preg_replace('/[,]/','',$date);
-				$date = preg_replace('/(Mon|Tue|Wed|Thu|Fri|Sat|Sun)/','',$date);
-				$date = trim($date);
-				list($day,$month,$year) = explode(" ",$date);
-				$date = $month . " " . $day . ", " . $year;
-								
-				// echo the info
-				if($event->image){
-					echo '<p><img src="' . $img . '" alt="' . $title . '" /></p>';
-				}
-				echo '<p>Event: <a href="' . $url . '"><b>' . $title . '</b></a></p>';
-				echo '<p>Headlining: <b>' . $headline . '</b></p>';
-				if($event->description){
-					echo '<p>' . $description . '</p>';
-				}
-				echo '<p>All Acts:</p><ul>';
-				foreach($artists as $artist){
-					echo '<li>' . $artist . '</li>';
-				}
-				echo '</ul>';
-				if($event->venue->website){
-					echo '<p>Venue: <a href="' . $venueWebsite . '"><b>' . $venue . '</b></a></p>';
-				}elseif($event->venue->url){
-					echo '<p>Venue: <a href="' . $venueUrl . '"><b>' . $venue . '</b></a></p>';
-				}else{
-					echo '<p>Venue: ' . $venue . '</p>';
-				}
-				echo '<p>Location: ' . $location . '</p>';
-				echo '<p>Date: ' . $date . ' ' . $hour . '</p>';
-				if($event->tags){
-					echo '<p>Event Tags:</p>';
-					echo '<ul>';
-					foreach($tags as $tag){
-						echo '<li>' . $tag . '</p>';
-					}
-					echo '</ul>';
-				}
-				echo '<hr />';
+		$info = array();
+		$i = 0;
+		foreach($events as $event){
+			// Turn the time into a 12-hour format
+			preg_match('/\d{2}[:]\d{2}[:]\d{2}/',$event->startDate,$time);
+			list($fullhour,$minute,$second) = explode(":",$time[0]);
+			if($fullhour > 12){
+				$hour = ($fullhour - 12) . ":" . $minute . " PM";
+			}else{
+				$hour = $fullhour . ":" . $minute . " AM";
 			}
-		}else{
-			echo " There are no nearby events.";
+							
+			// Delete time from startdate
+			$date = preg_replace('/\d{2}[:]\d{2}[:]\d{2}/','',$event->startDate);
+			$date = preg_replace('/[,]/','',$date);
+			$date = preg_replace('/(Mon|Tue|Wed|Thu|Fri|Sat|Sun)/','',$date);
+			$date = trim($date);
+			list($day,$month,$year) = explode(" ",$date);
+			$date = $month . " " . $day . ", " . $year;
+			
+			$info[$i] = array(
+				'title' => $event->title,
+				'artists' => $event->artists->artist,
+				'headline' => $event->artists->headliner,
+				'venue' => $event->venue->name,
+				'location' => $event->venue->location->city,
+				'venueUrl' => $event->venue->url,
+				'venueWebsite' => $event->venue->website,
+				'startdate' => $event->startDate,
+				'description' => $event->description,
+				'img' => $event->image[2],
+				'url' => $event->url,
+				'website' => $event->website,
+				'tickets' => $event->ticket,
+				'tags' => $event->tags->tag
+			);
+			
+			$i++;
 		}
+		
+		return $info;
 	}
+	
 }
-?>
