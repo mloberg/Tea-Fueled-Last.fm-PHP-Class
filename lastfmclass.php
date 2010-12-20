@@ -21,7 +21,7 @@ class lastFM{
 	private $apikey;
 	private $user;
 	
-	function __construct($api,$user,$secret){
+	function __construct($api,$user){
 		$this->apikey = $api;
 		$this->user = $user;
 	}
