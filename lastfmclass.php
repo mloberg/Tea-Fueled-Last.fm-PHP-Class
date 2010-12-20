@@ -538,27 +538,156 @@ class lastFM{
 	********************/
 	
 	function chartHypedArtists(){
-	
+		/* RETURNS AN ARRAY */
+		// build the api url
+		$lastfm = $this->url . '?method=chart.gethypedartists&api_key=' . $this->apikey;
+		// get the xml file
+		$xml = simplexml_load_file($lastfm);
+		
+		$artists = $xml->artists->artist;
+		$info = array();
+		$i = 0;
+		foreach($artists as $artist){
+			$info[$i] = array(
+				'name' => $artist->name,
+				'img' => $artist->image[2],
+				'url' => $artist->url,
+				'change' => $artist->percentchange
+			);
+			
+			$i++;
+		}
+		
+		return $info;
 	}
 	
 	function chartHypedTracks(){
-	
+		/* RETURNS AN ARRAY */
+		// build the api url
+		$lastfm = $this->url . '?method=chart.gethypedtracks&api_key=' . $this->apikey;
+		// get the xml file
+		$xml = simplexml_load_file($lastfm);
+		
+		$tracks = $xml->tracks->track;
+		$info = array();
+		$i = 0;
+		foreach($tracks as $track){
+			$info[$i] = array(
+				'name' => $track->name,
+				'img' => $track->image[2],
+				'url' => $track->url,
+				'artist' => $track->artist->name,
+				'artisturl' => $track->artist->url,
+				'change' => $track->percentchange
+			);
+			
+			$i++;
+		}
+		
+		return $info;
 	}
 	
 	function chartLovedTracks(){
-	
+		/* RETURNS AN ARRAY */
+		// build the api url
+		$lastfm = $this->url . '?method=chart.getlovedtracks&api_key=' . $this->apikey;
+		// get the xml file
+		$xml = simplexml_load_file($lastfm);
+		
+		$tracks = $xml->tracks->track;
+		$info = array();
+		$i = 0;
+		foreach($tracks as $track){
+			$info[$i] = array(
+				'name' => $track->name,
+				'img' => $track->image[2],
+				'url' => $track->url,
+				'artist' => $track->artist->name,
+				'artisturl' => $track->artist->url,
+				'loves' => $track->loves
+			);
+			
+			$i++;
+		}
+		
+		return $info;
 	}
 	
 	function chartTopArtists(){
-	
+		/* RETURNS AN ARRAY */
+		// build the api url
+		$lastfm = $this->url . '?method=chart.gettopartists&api_key=' . $this->apikey;
+		// get the xml file
+		$xml = simplexml_load_file($lastfm);
+		
+		$artists = $xml->artists->artist;
+		$info = array();
+		$i = 0;
+		foreach($artists as $artist){
+			$info[$i] = array(
+				'name' => $artist->name,
+				'img' => $artist->image[2],
+				'url' => $artist->url,
+				'playcount' => $artist->playcount,
+				'listeners' => $artist->listeners
+			);
+			
+			$i++;
+		}
+		
+		return $info;
 	}
 	
 	function chartTopTags(){
-	
+		/* RETURNS AN ARRAY */
+		// build the api url
+		$lastfm = $this->url . '?method=chart.gettoptags&api_key=' . $this->apikey;
+		// get the xml file
+		$xml = simplexml_load_file($lastfm);
+		
+		$tags = $xml->tags->tag;
+		$info = array();
+		$i = 0;
+		foreach($tags as $tag){
+			$info[$i] = array(
+				'name' => $tag->name,
+				'url' => $tag->url,
+				'reach' => $tag->reach,
+				'tags' => $tag->taggings,
+				'summary' => $tag->wiki->summary,
+				'description' => $tag->wiki->description
+			);
+			
+			$i++;
+		}
+		
+		return $info;
 	}
 	
 	function chartTopTracks(){
-	
+		
+		// build the api url
+		$lastfm = $this->url . '?method=chart.gettoptracks&api_key=' . $this->apikey;
+		// get the xml file
+		$xml = simplexml_load_file($lastfm);
+		
+		$tracks = $xml->tracks->track;
+		$info = array();
+		$i = 0;
+		foreach($tracks as $track){
+			$info[$i] = array(
+				'name' => $track->name,
+				'artist' => $track->artist->name,
+				'artisturl' => $track->artist->url,
+				'url' => $track->url,
+				'playcount' => $track->playcount,
+				'listeners' => $track->listeners
+			);
+			
+			$i++;
+		}
+		
+		return $info;
 	}
 	
 	/************************
