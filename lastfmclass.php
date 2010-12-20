@@ -4,7 +4,7 @@
 **	Author: Matthew Loberg
 **	URL: http://mloberg.com/blog/lastfmclass/
 **	Author URL: http://mloberg.com
-**	Version: 0.3
+**	Version: 0.4
 **	License: Copyright 2010 Matthew Loberg. Licenced under the MIT licence. More information in licence.txt, readme.txt, and at http://creativecommons.org/licenses/MIT/
 **	
 **	This is a last.fm class I created for making API calls to last.fm.
@@ -30,7 +30,7 @@ class lastFM{
 		USER METHODS
 	************************/
 	
-	function getUserLoved($l=''){
+	function userLoved($l=''){
 		// set the parameters if any were passed
 		$limit = $l;
 		// build the url
@@ -72,7 +72,7 @@ class lastFM{
 	*	You could pass nothing ('') or -1 as a limit to get all.
 	**/
 	   
-	function getUserRecent($l='',$t=''){
+	function userRecent($l='',$t=''){
 		// set the parameters if any were passed
 		$limit = $l;
 		$timeBack = $t;
@@ -120,7 +120,7 @@ class lastFM{
 		}
 	}
 	
-	function getUserBanned($l=''){
+	function userBanned($l=''){
 		// set the parameters if any were passed
 		$limit = $l;
 		// build the api url
@@ -151,7 +151,7 @@ class lastFM{
 		}
 	}
 	
-	function getUserEvents(){
+	function userEvents(){
 		/**
 		*	This api call is a little weird.
 		*	An event has a lot of tags, but not all have to filled in.
@@ -235,7 +235,7 @@ class lastFM{
 		}
 	}
 	
-	function getUserFriends($l=''){
+	function userFriends($l=''){
 		$limit = $l;
 		// build the api url
 		$lastfm = $this->url . '?method=user.getfriends&user=' . $this->user . '&limit=' . $limit . '&api_key=' . $this->apikey;
@@ -257,7 +257,7 @@ class lastFM{
 		}
 	}
 	
-	function getUserInfo(){
+	function userInfo(){
 		/* RETURNS AN ARRAY */
 		// build the api url
 		$lastfm = $this->url . '?method=user.getinfo&user=' . $this->user . '&api_key=' . $this->apikey;
@@ -284,7 +284,7 @@ class lastFM{
 		return $info;
 	}
 	
-	function getUserPlaylists(){
+	function userPlaylists(){
 		/* RETURNS AN ARRAY */
 		// build the api url
 		$lastfm = $this->url . '?method=user.getplaylists&user=' . $this->user . '&api_key=' . $this->apikey;
@@ -312,7 +312,7 @@ class lastFM{
 		return $info;
 	}
 	
-	function getUserShouts(){
+	function userShouts(){
 		/* RETURNS AN ARRAY */
 		// build the api url
 		$lastfm = $this->url . '?method=user.getshouts&user=' . $this->user . '&api_key=' . $this->apikey;
@@ -335,7 +335,7 @@ class lastFM{
 		return $info;
 	}
 	
-	function getUserTopAlbums(){
+	function userTopAlbums(){
 		/* RETURNS AN ARRAY */
 		
 		/********************
@@ -365,7 +365,7 @@ class lastFM{
 		return $info;
 	}
 	
-	function getUserTopArtists(){
+	function userTopArtists(){
 		/* RETURNS AN ARRAY */
 		
 		/********************
@@ -393,7 +393,7 @@ class lastFM{
 		return $info;
 	}
 	
-	function getUserTopTags(){
+	function userTopTags(){
 		/* RETURNS AN ARRAY */
 		
 		/********************
@@ -420,7 +420,7 @@ class lastFM{
 		return $info;
 	}
 	
-	function getUserTopTracks(){
+	function userTopTracks(){
 		/* RETURNS AN ARRAY */
 		
 		/********************
@@ -450,7 +450,7 @@ class lastFM{
 		return $info;
 	}
 	
-		function getUserAlbumChart(){
+		function userAlbumChart(){
 		/* RETURNS AN ARRAY */
 		
 		/********************
@@ -478,7 +478,7 @@ class lastFM{
 		return $info;
 	}
 	
-	function getUserArtistChart(){
+	function userArtistChart(){
 		/* RETURNS AN ARRAY */
 		
 		/********************
@@ -505,7 +505,7 @@ class lastFM{
 		return $info;
 	}
 	
-	function getUserTrackChart(){
+	function userTrackChart(){
 		/* RETURNS AN ARRAY */
 		
 		/********************
@@ -533,11 +533,39 @@ class lastFM{
 		return $info;
 	}
 	
+	/********************
+		CHART METHODS
+	********************/
+	
+	function chartHypedArtists(){
+	
+	}
+	
+	function chartHypedTracks(){
+	
+	}
+	
+	function chartLovedTracks(){
+	
+	}
+	
+	function chartTopArtists(){
+	
+	}
+	
+	function chartTopTags(){
+	
+	}
+	
+	function chartTopTracks(){
+	
+	}
+	
 	/************************
 		LIBRARY METHODS
 	************************/
 	
-	function getLibraryTracks($l=''){
+	function libraryTracks($l=''){
 		// set the parameters if any were passed
 		$limit = $l;
 		// build the api url
@@ -573,7 +601,7 @@ class lastFM{
 		}
 	}
 	
-	function getLibraryArtists($l=''){
+	function libraryArtists($l=''){
 		// set the parameters if any were passed
 		$limit = $l;
 		// build the api url
@@ -606,7 +634,7 @@ class lastFM{
 		}
 	}
 	
-	function getLibraryAlbums($l=''){
+	function libraryAlbums($l=''){
 		// set the parameters if any were passed
 		$limit = $l;
 		// build the api url
@@ -644,7 +672,7 @@ class lastFM{
 		GEO CALLS
 	************************/
 
-	function getNearbyEvents($l=''){
+	function nearbyEvents($l=''){
 		/************
 		 If you do not specify a location, you will recive all events,
 		 to fix this I am using geoplugin (http://geoplugin.com) to get the
