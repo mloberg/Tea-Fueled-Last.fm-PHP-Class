@@ -21,7 +21,7 @@ class lastFM{
 	private $apikey;
 	private $user;
 	
-	function __construct($api,$user,$secret){
+	function __construct($api,$user){
 		$this->apikey = $api;
 		$this->user = $user;
 	}
@@ -442,6 +442,89 @@ class lastFM{
 				'playcount' => $track->playcount,
 				'url' => $track->url,
 				'img' => $track->image[2]
+			);
+			
+			$i++;
+		}
+		
+		return $info;
+	}
+	
+		function getUserAlbumChart(){
+		/* RETURNS AN ARRAY */
+		
+		/********************
+		Need to add optional time period
+		********************/
+		// build the api url
+		$lastfm = $this->url . '?method=user.getweeklyalbumchart&user=' . $this->user . '&api_key=' . $this->apikey;
+		// get the xml file
+		$xml = simplexml_load_file($lastfm);
+		
+		$albums = $xml->weeklyalbumchart->album;
+		$info = array();
+		$i = 0;
+		foreach($albums as $album){
+			$info[$i] = array(
+				'name' => $album->name,
+				'artist' => $album->artist,
+				'url' => $album->url,
+				'playcount' => $album->playcount
+			);
+			
+			$i++;
+		}
+		
+		return $info;
+	}
+	
+	function getUserArtistChart(){
+		/* RETURNS AN ARRAY */
+		
+		/********************
+		Need to add optional time period
+		********************/
+		// build the api url
+		$lastfm = $this->url . '?method=user.getweeklyartistchart&user=' . $this->user . '&api_key=' . $this->apikey;
+		// get the xml file
+		$xml = simplexml_load_file($lastfm);
+		
+		$artists = $xml->weeklyartistchart->artist;
+		$info = array();
+		$i = 0;
+		foreach($artists as $artist){
+			$info[$i] = array(
+				'name' => $artist->name,
+				'url' => $artist->url,
+				'playcount' => $artist->playcount
+			);
+			
+			$i++;
+		}
+		
+		return $info;
+	}
+	
+	function getUserTrackChart(){
+		/* RETURNS AN ARRAY */
+		
+		/********************
+		Need to add optional time period
+		********************/
+		// build the api url
+		$lastfm = $this->url . '?method=user.getweeklytrackchart&user=' . $this->user . '&api_key=' . $this->apikey;
+		// get the xml file
+		$xml = simplexml_load_file($lastfm);
+		
+		$tracks = $xml->weeklytrackchart->track;
+		$info = array();
+		$i = 0;
+		foreach($tracks as $track){
+			$info[$i] = array(
+				'name' => $track->name,
+				'artist' => $track->artist,
+				'url' => $track->url,
+				'playcount' => $track->playcount
 			);
 			
 			$i++;
