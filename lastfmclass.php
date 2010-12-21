@@ -4,7 +4,7 @@
 **	Author: Matthew Loberg
 **	URL: http://mloberg.com/blog/lastfmclass/
 **	Author URL: http://mloberg.com
-**	Version: 0.4
+**	Version: 0.5a1
 **	License: Copyright 2010 Matthew Loberg. Licenced under the MIT licence. More information in licence.txt, readme.txt, and at http://creativecommons.org/licenses/MIT/
 **	
 **	This is a last.fm class I created for making API calls to last.fm.
@@ -20,10 +20,50 @@ class lastFM{
 	private $url = 'http://ws.audioscrobbler.com/2.0/';
 	private $apikey;
 	private $user;
+	private $secret;
+	private $callback;
 	
-	function __construct($api,$user){
+	function __construct($api,$user,$secret){
 		$this->apikey = $api;
 		$this->user = $user;
+		$this->secret = $secret;
+	}
+	
+	/********************
+		AUTHENTICATION
+	********************/
+	
+	/**
+	 * Right now we are storing the token, and secret key in a cookie.
+	 * I will extend this later to store in a database.
+	**/
+	
+	function auth(){
+		// find out if we already have a key to use
+		if(!isset($_COOKIE['lastfmkey'])){
+			// if not, find out where we are in the process
+			if(!isset($_COOKIE['lftoken']) && $_GET['token'] == ''){
+				// get a token
+				if($this->callback != ''){
+					// if there is a callback, include that in the api call
+					$lastfm = 'http://www.last.fm/api/auth/?api_key=' . $this->apikey '&cb=' . $this->callback;
+				}else{
+					$lastfm = 'http://www.last.fm/api/auth/?api_key=' . $this->apikey;
+				}
+				header("Location: $lastfm");
+				exit();
+			}elseif(!isset($_COOKIE['lftoken'])){
+				// get the token, and set a cookie with it
+				setcookie('lftoken', $_GET['token'], time()+3600);
+				// get a api signiture
+			}
+		}else{
+			return true;
+		}
+	}
+	
+	function signiture(){
+	
 	}
 	
 	/************************
