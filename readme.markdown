@@ -2,7 +2,7 @@
 
 Name: Tea-Fueled Last.fm PHP Class
 
-Version 0.5a1
+Version 0.5
 
 Author: Matthew Loberg
 

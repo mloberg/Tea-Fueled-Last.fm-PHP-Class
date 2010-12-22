@@ -4,7 +4,7 @@
 **	Author: Matthew Loberg
 **	URL: http://mloberg.com/blog/lastfmclass/
 **	Author URL: http://mloberg.com
-**	Version: 0.5a1
+**	Version: 0.5
 **	License: Copyright 2010 Matthew Loberg. Licenced under the MIT licence. More information in licence.txt, readme.txt, and at http://creativecommons.org/licenses/MIT/
 **	
 **	This is a last.fm class I created for making API calls to last.fm.
@@ -21,7 +21,7 @@ class lastFM{
 	private $apikey;
 	private $user;
 	private $secret;
-	private $callback;
+	public $callback;
 	
 	function __construct($api,$user,$secret){
 		$this->apikey = $api;
@@ -38,7 +38,7 @@ class lastFM{
 	 * I will extend this later to store in a database.
 	**/
 	
-	function auth(){
+	protected function auth(){
 		// find out if we already have a key to use
 		if(!isset($_COOKIE['lastfmkey'])){
 			// if not, find out where we are in the process
@@ -46,7 +46,7 @@ class lastFM{
 				// get a token
 				if($this->callback != ''){
 					// if there is a callback, include that in the api call
-					$lastfm = 'http://www.last.fm/api/auth/?api_key=' . $this->apikey '&cb=' . $this->callback;
+					$lastfm = 'http://www.last.fm/api/auth/?api_key=' . $this->apikey . '&cb=' . $this->callback;
 				}else{
 					$lastfm = 'http://www.last.fm/api/auth/?api_key=' . $this->apikey;
 				}
@@ -54,16 +54,49 @@ class lastFM{
 				exit();
 			}elseif(!isset($_COOKIE['lftoken'])){
 				// get the token, and set a cookie with it
-				setcookie('lftoken', $_GET['token'], time()+3600);
+				$token = $_GET['token'];
+				setcookie('lftoken', $token, time()+3600);
 				// get a api signiture
+				$params = array(
+					'method' => 'auth.getSession',
+					'token' => $token,
+				);
+				$sig = $this->signiture($params);
+				// get the session key
+				$lastfm = $this->url . '?method=auth.getSession&token=' . $token . '&api_key=' . $this->apikey . '&api_sig=' . $sig;
+				$xml = simplexml_load_file($lastfm);
+				$key = $xml->session->key;
+				setcookie('lastfmkey',$key,time()+3600*24*30);
+				return $key;
+			}else{
+				// get a api signiture
+				$token = $_COOKIE['lftoken'];
+				$params = array(
+					'method' => 'auth.getSession',
+					'token' => $token,
+				);
+				$sig = $this->signiture($params);
+				// get the session key
+				$lastfm = $this->url . '?method=auth.getSession&token=' . $token . '&api_key=' . $this->apikey . '&api_sig=' . $sig;
+				$xml = simplexml_load_file($lastfm);
+				$key = $xml->session->key;
+				setcookie('lastfmkey',$key,time()+3600*24*30);
+				return $key;
 			}
 		}else{
-			return true;
+			$key = $_COOKIE['lastfmkey'];
+			return $key;
 		}
 	}
 	
-	function signiture(){
-	
+	protected function signiture($params){
+		$sig_string = 'api_key' . $this->apikey;
+		foreach($params as $key => $value){
+			$sig_string .= $key . $value;
+		}
+		$sig_string .= $this->secret;
+		$sig = md5($sig_string);
+		return $sig;
 	}
 	
 	/************************
@@ -505,6 +538,41 @@ class lastFM{
 				'artist' => $track->artist,
 				'url' => $track->url,
 				'playcount' => $track->playcount
+			);
+			
+			$i++;
+		}
+		
+		return $info;
+	}
+	
+	/********************
+		USER AUTH METHODS
+	********************/
+	
+	function recentStations(){
+		// get the lastfm session key
+		$sk = $this->auth();
+		// get the signiture
+		$params = array(
+			'method' => 'user.getRecentStations',
+			'sk' => $sk,
+			'user' => $this->user
+		);
+		$sig = $this->signiture($params);
+		// build the api url
+		$lastfm = $this->url . '?method=user.getRecentStations&user=' . $this->user . '&sk=' . $sk . '&api_key=' . $this->apikey . '&api_sig=' . $sig;
+		// get the xml file
+		$xml = simplexml_load_file($lastfm);
+		
+		$stations = $xml->recentstations->station;
+		$info = array();
+		$i = 0;
+		foreach($stations as $sation){
+			$info[$i] = array(
+				'type' => $station->type,
+				'name' => $station->name,
+				'url' => $station->url
 			);
 			
 			$i++;
