@@ -692,7 +692,7 @@ class lastFM{
 		$info = array();
 		$i = 0;
 		foreach($albums as $album){
-			$info = array(
+			$info[$i] = array(
 				'name' => $album->name,
 				'url' => $album->url,
 				'artist' => $album->artist->name,
