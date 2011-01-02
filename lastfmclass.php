@@ -568,11 +568,14 @@ class lastFM{
 		$stations = $xml->recentstations->station;
 		$info = array();
 		$i = 0;
-		foreach($stations as $sation){
+		foreach($stations as $station){
 			$info[$i] = array(
 				'type' => $station->type,
 				'name' => $station->name,
-				'url' => $station->url
+				'url' => $station->url,
+				'resource' => $station->resource->name,
+				'resource_url' => $station->resource->url,
+				'resource_img' => $station->resource->image[2]
 			);
 			
 			$i++;
@@ -885,4 +888,50 @@ class lastFM{
 		return $info;
 	}
 	
+	/********************
+		RADIO METHODS
+	********************/
+	
+	function radioTune($play){
+		$sk = $this->auth();
+		$params = array(
+			'method' => 'radio.tune',
+			'sk' => $sk,
+			'station' => $play
+		);
+		$sig = $this->signiture($params);
+		$ch = curl_init();
+		$data = 'method=radio.tune&station=lastfm://globaltags/techno&api_key=' . $this->apikey . '&api_sig=' . $sig . '&sk=' . $sk;
+		curl_setopt($ch, CURLOPT_URL, $this->url);
+		curl_setopt($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		$lastfm = curl_exec($ch);
+		curl_close($ch);
+		
+		$xml = simplexml_load_string($lastfm);
+		
+		// returns just a single record, no need to do a loop
+		$station = $xml->station;
+		$info = array(
+			'type' => $station->type,
+			'name' => $station->name,
+			'url' => $station->url
+		);
+				
+		return $info;
+	}
+	
+	function radioPlaylist(){
+		$sk = $this->auth();
+		$params = array(
+			'method' => 'radio.getPlaylist',
+			'sk' => $sk
+		);
+		$sig = $this->signiture($params);
+		$lastfm = $this->url . '?method=radio.getPlaylist&api_key=' . $this->apikey . '&api_sig=' . $sig . '&sk=' . $sk;
+		$xml = simplexml_load_file($lastfm);
+		print_r($xml);
+		//$tracks = $xml->playlist->trackList->track;
+	}
 }
