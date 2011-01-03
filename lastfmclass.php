@@ -69,6 +69,7 @@ class lastFM{
 	function userRecent($l='',$t=''){
 		// set the parameters if any were passed
 		$limit = $l;
+		// timeBack declared in days
 		$timeBack = $t;
 		
 		/**

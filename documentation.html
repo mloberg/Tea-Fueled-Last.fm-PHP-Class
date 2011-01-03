@@ -2,71 +2,68 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8" />
-	<title>Tea-Fueled Last.fm PHP Class Dcomentation</title>
-	<link rel="stylesheet" href="css/style.css" />
-	<!--[if IE]>
+	<title>Last.fm Examples</title>
+	<!--[if lt IE 9]>
 		<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
 	<![endif]-->
+	<style>
+		pre{
+			margin-left: 20px;
+			padding: 10px;
+			border: 1px solid #000;
+			background: #CCC;
+			width: 50%;
+		}
+	</style>
 </head>
 <body>
 <div id="wrapper">
-<h1>Tea-Fueled Last.fm PHP Class</h1>
-<p>This is a new project, things will change, so I didn't spend much time on this documentation, because things will probably change. But for early adopters, here is how you can use it now.</p>
-<p>First you have to call lastfmclass.php by using include().</p>
+	<p>Tea-Fueled Last.fm Class/Library. This is a simple PHP library that allows you to interact with Last.fm's API.</p>
+	<div id="getting_started">
+		<h1>Getting started</h1>
+		<p>Before you start to use this library, you first need to get an API key from Last.fm. You can get one at <a href="http://www.last.fm/api/account">Last.fm API site</a>. Take note of the API Key.</p>
+		<p>Now that you have an API Key, you need to include <em>lastfmclass.php</em> in your PHP page.</p>
+<pre>include('lastfmclass.php');</pre>
+		<p>After you have the library included, you need to create a new object so you can use the library. To do this, you need to assign lastFM to a variable. When you create this object, you need to pass two options to it, the API Key, and your username.</p>
+<pre>$lastfm = new lastFM('APIKEY','username');</pre>
+		<p>Now you are ready to start using the Last.fm Library.</p>
+	</div>
+	<hr />
+	<div id="making_calls">
+		<h1>Making a basic API Calls</h1>
+		<p>Now that you have the Last.fm Library stored in an object, you can now make API calls.</p>
+		<p>This library does not have support for all of the API calls. To see the calls that are supported you can check the <a href="http://github.com/mloberg/Tea-Fueled-Last.fm-PHP-Class/wiki/API-Methods">Wiki</a>. Most calls have the same basic naming convention, categoryMethod, leaving off the get. Check source for exact name for the call you want to make.</p>
+		<p>Here is the syntax to make a call for the latest listen to tracks.</p>
+<pre>$lastfm->userRecent();</pre>
+		<p>Since version 0.4, all methods pass back an array, so you need to capture this in a variable.</p>
+<pre>$tracks = $lastfm->userRecent();</pre>
+		<p>Most methods return a multi-level array (or array within an array) so to go through the data, you need to use a for or foreach statement.</p>
 <pre>
-&lt;?php include("lastfmclass.php"); ?> 
+foreach($tracks as $track){
+	echo $track->name;
+}
 </pre>
-<p>Then you initialize it:</p>
-<pre>
-&lt;?php $lastfm = new lastFM(); ?>
-</pre>
-<p>Then you need to set some parameters.</p>
-<pre>
-&lt;?php
-	$lastfm->user = "yourusername";
-	$lastfm->apikey = "yourApiKey";	
-?>
-</pre>
-<p>This class requires that you use your own API key. It's simple to get one, just head over to <a href="http://www.last.fm/api/account">http://www.last.fm/api/account</a>.</p>
-<p>So all together, it should look something like:</p>
-<pre>
-&lt;?php
-	include('lastfmclass.php');
-	$lastfm = new lastFM();
-	$lastfm->user = "username";
-	$lastfm->apikey = "apikey";
-?>
-</pre>
-<p>Now we can make a Last.fm API call.</p>
-<p>Currently there are only a couple supported calls.</p>
-<ul>
-	<li>user.getLovedTracks</li>
-	<li>user.getRecentTracks</li>
-	<li>user.getBannedTracks</li>
-</ul>
-<p>Support for more calls will be added in the future, but let's see how we can use these calls:</p>
-<pre>
-&lt;?php $lastfm->getLoved(); ?>
-</pre>
-<p>The above call is to get the users loved tracks. Pretty easy. Let's look at the other calls.</p>
-<p>Get recently played:</p>
-<pre>
-&lt;?php $lastfm->getRecent(); ?>
-</pre>
-<p>Get banned tracks:</p>
-<pre>
-&lt;?php $lastfm->getBanned(); ?>
-</pre>
-<h2>To Do:</h2>
-<ul>
-	<li>Add more API calls</li>
-	<li>Allow for options to be passed for API calls
-		<ul>
-			<li>Return as list or as paragraph</li>
-			<li>Limit number of tracks</li>
-		</ul>
-	</li>
-</ul>
+		<p>Some calls allow for options to be passed. Right now, it doesn't have the greatest implementation, but this will change with the next version.</p>
+<pre>$track = $lastfm->userRecent(10)</pre>
+		<p>The above code adds a limit parameter, so only 10 tracks are passed back.</p>
+<pre>$track = $lastfm->userRecent(10, 7)</pre>
+		<p>The above code again, adds a limit and adds a time back parameter declared in days. So this call returns 10 tracks from the past 7 days.</p>
+		<p>Here is the problem with passing options back like this.</p>
+<pre>$track = $lastfm->userRecent('', 7)</pre>
+		<p>If you just want to pass back the time parameter, you have to add a blank parameter for the limit. This will be changing in the next version.</p>
+		<p>If you want to know what options each call has, please check the source.</p>
+	</div>
+	<hr />
+	<div id="auth_calls">
+		<h1>Making Authenticated Calls</h1>
+		<p><em>Coming Soon!</em></p>
+	</div>
+	<hr />
+	<div>
+		<p>That is the basic documentation for the Tea-Fueled Last.fm Class. I am in the middle of the next version, so you can expect for some of this to change and for more (and better) documentation, plus examples when I release the next version.</p>
+		<p>Thanks for showing interest in this project of mine.</p>
+		<p><a href="http://mloberg.com">Matthew Loberg</a><br />- <a href="http://teafueleddesign.com/">Tea-Fueled Design</a></p>
+	</div>
 </div>
 </body>
 </html>
