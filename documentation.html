@@ -40,7 +40,7 @@
 		<p>Most methods return a multi-level array (or array within an array) so to go through the data, you need to use a for or foreach statement.</p>
 <pre>
 foreach($tracks as $track){
-	echo $track->name;
+	echo $track['name'];
 }
 </pre>
 		<p>Some calls allow for options to be passed. Right now, it doesn't have the greatest implementation, but this will change with the next version.</p>
