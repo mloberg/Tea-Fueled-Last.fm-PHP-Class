@@ -5,7 +5,7 @@
 **	URL: http://mloberg.com/blog/lastfmclass/
 **	Author URL: http://mloberg.com
 **	Version: 0.4
-**	License: Copyright 2010 Matthew Loberg. Licenced under the MIT licence. More information in licence.txt, readme.txt, and at http://creativecommons.org/licenses/MIT/
+**	License: Copyright 2011 Matthew Loberg. Licenced under the MIT licence. More information in licence.txt, readme.txt, and at http://creativecommons.org/licenses/MIT/
 **	
 **	This is a last.fm class I created for making API calls to last.fm.
 **	Currently only a limited number of API calls are supported right now with more being added.

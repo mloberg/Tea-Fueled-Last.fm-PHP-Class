@@ -10,7 +10,7 @@ URL: http://mloberg.com/blog/lastfmclass/ *New URL coming soon, but for now, che
 
 Author URL: http://mloberg.com
 
-Licence: Copyright (c) 2010 Matthew Loberg under the MIT Licence (licence.txt)
+Licence: Copyright (c) 2011 Matthew Loberg under the MIT Licence (licence.txt)
 
 Understandable Licence: http://creativecommons.org/licenses/MIT/
 
