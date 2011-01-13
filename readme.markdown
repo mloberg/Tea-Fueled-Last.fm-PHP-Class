@@ -36,6 +36,8 @@ This was a class I created for last.fm's API. Not all of Last.fm's API calls are
 ### 0.5
 
 * Added authentication
+* user.getRecentStations
+* artist.getInfo
 
 ### 0.4
 

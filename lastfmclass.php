@@ -1,16 +1,14 @@
 <?php
-/*************************
-**	Name: Tea-Fueled Last.fm PHP Class
-**	Author: Matthew Loberg
-**	URL: http://mloberg.com/blog/lastfmclass/
-**	Author URL: http://mloberg.com
-**	Version: 0.5
-**	License: Copyright 2010 Matthew Loberg. Licenced under the MIT licence. More information in licence.txt, readme.txt, and at http://creativecommons.org/licenses/MIT/
-**	
-**	This is a last.fm class I created for making API calls to last.fm.
-**	Currently only a limited number of API calls are supported right now with more being added.
-**	
-*************************/
+/**
+ * Name: Tea-Fueled Last.fm PHP Class
+ * Author: Matthew Loberg
+ * URL: http://mloberg.com/blog/lastfmclass/
+ * Author URL: http://mloberg.com
+ * Version: 0.5
+ * License: Copyright 2011 Matthew Loberg. Licenced under the MIT licence. More information in licence.txt, readme.txt, and at http://creativecommons.org/licenses/MIT/
+ *
+ * This is a last.fm class I created for making API calls to last.fm.
+ */
 
 class lastFM{
 
@@ -896,55 +894,43 @@ class lastFM{
 	}
 	
 	/********************
-		RADIO METHODS
+		ARTIST CALLS
 	********************/
 	
-	/**
-	 * Neither of these methods are complete.
-	 * I am especially stuck on radio.tune. Know what it returns, but I am trying to write an app that uses it, and I'm running into issues.
-	 * These are funny calls.
-	 */
-	
-	function radioTune($play){
-		$sk = $this->auth();
-		$params = array(
-			'method' => 'radio.tune',
-			'sk' => $sk,
-			'station' => $play
-		);
-		$sig = $this->signiture($params);
-		$ch = curl_init();
-		$data = 'method=radio.tune&station=lastfm://globaltags/techno&api_key=' . $this->apikey . '&api_sig=' . $sig . '&sk=' . $sk;
-		curl_setopt($ch, CURLOPT_URL, $this->url);
-		curl_setopt($ch, CURLOPT_POST, 1);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		$lastfm = curl_exec($ch);
-		curl_close($ch);
-		
-		$xml = simplexml_load_string($lastfm);
-		
-		// returns just a single record, no need to do a loop
-		$station = $xml->station;
-		$info = array(
-			'type' => $station->type,
-			'name' => $station->name,
-			'url' => $station->url
-		);
-				
-		return $info;
-	}
-	
-	function radioPlaylist(){
-		$sk = $this->auth();
-		$params = array(
-			'method' => 'radio.getPlaylist',
-			'sk' => $sk
-		);
-		$sig = $this->signiture($params);
-		$lastfm = $this->url . '?method=radio.getPlaylist&api_key=' . $this->apikey . '&api_sig=' . $sig . '&sk=' . $sk;
+	function artistInfo($artist){
+		$lastfm = $this->url . '?method=artist.getinfo&artist=' . $artist . '&autocorrect=1&api_key=' . $this->apikey;
 		$xml = simplexml_load_file($lastfm);
-		print_r($xml);
-		//$tracks = $xml->playlist->trackList->track;
+		
+		// returns a single single record
+		$artist = $xml->artist;
+		$info = array();
+		$info['name'] = $artist->name;
+		$info['url'] = $artist->url;
+		$info['img'] = $artist->image[2];
+		$info['listeners'] = $artist->stats->listeners;
+		$info['playcount'] = $artist->stats->playcount;
+		$info['summary'] = $artist->bio->summary;
+		$info['bio'] = $artist->bio->content;
+		$info['tags'] = array();
+		$i = 0;
+		foreach($artist->tags->tag as $tag){
+			$info['tags'][$i] = array(
+				'name' => $tag->name,
+				'url' => $tag->url
+			);
+			$i++;
+		}
+		$info['similar'] = array();
+		$i = 0;
+		foreach($artist->similar->artist as $similar){
+			$info['similar'][$i] = array(
+				'name' => $similar->name,
+				'url' => $similar->url,
+				'img' => $similar->image[2]
+			);
+			$i++;
+		}
+		
+		return $info;
 	}
 }
