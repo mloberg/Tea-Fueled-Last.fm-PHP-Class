@@ -89,6 +89,11 @@ class lastFM{
 		}
 	}
 	
+	/**
+	 * This function generates the a signiture for each call.
+	 * Each call has a unique signiture. It's an md5 hash of all the passed parameters
+	 */
+	
 	protected function signiture($params){
 		$sig_string = 'api_key' . $this->apikey;
 		foreach($params as $key => $value){
@@ -137,6 +142,8 @@ class lastFM{
 	*	The time back parameter is specified in days.
 	*	One "bug" is if you want to specify the time back, you must also specify a limit.
 	*	You could pass nothing ('') or -1 as a limit to get all.
+	*
+	*	I will be re-doing this in a later version.
 	**/
 	   
 	function userRecent($l='',$t=''){
@@ -891,6 +898,12 @@ class lastFM{
 	/********************
 		RADIO METHODS
 	********************/
+	
+	/**
+	 * Neither of these methods are complete.
+	 * I am especially stuck on radio.tune. Know what it returns, but I am trying to write an app that uses it, and I'm running into issues.
+	 * These are funny calls.
+	 */
 	
 	function radioTune($play){
 		$sk = $this->auth();
