@@ -1,16 +1,15 @@
 <?php
-/*************************
-**	Name: Tea-Fueled Last.fm PHP Class
-**	Author: Matthew Loberg
-**	URL: http://mloberg.com/blog/lastfmclass/
-**	Author URL: http://mloberg.com
-**	Version: 0.4
-**	License: Copyright 2011 Matthew Loberg. Licenced under the MIT licence. More information in licence.txt, readme.txt, and at http://creativecommons.org/licenses/MIT/
-**	
-**	This is a last.fm class I created for making API calls to last.fm.
-**	Currently only a limited number of API calls are supported right now with more being added.
-**	
-*************************/
+
+/**
+ * Name: Tea-Fueled Last.fm PHP Class
+ * Author: Matthew Loberg
+ * URL: http://mloberg.com/blog/lastfmclass/
+ * Author URL: http://mloberg.com
+ * Version: 0.5
+ * License: Copyright 2011 Matthew Loberg. Licenced under the MIT licence. More information in licence.txt, readme.txt, and at http://creativecommons.org/licenses/MIT/
+ *
+ * This is a last.fm class I created for making API calls to last.fm.
+ */
 
 class lastFM{
 
@@ -20,10 +19,88 @@ class lastFM{
 	private $url = 'http://ws.audioscrobbler.com/2.0/';
 	private $apikey;
 	private $user;
+	private $secret;
+	public $callback;
 	
-	function __construct($api,$user){
+	function __construct($api,$user,$secret){
 		$this->apikey = $api;
 		$this->user = $user;
+		$this->secret = $secret;
+	}
+	
+	/********************
+		AUTHENTICATION
+	********************/
+	
+	/**
+	 * Right now we are storing the token, and secret key in a cookie.
+	 * I will extend this later to store in a database.
+	**/
+	
+	protected function auth(){
+		// find out if we already have a key to use
+		if(!isset($_COOKIE['lastfmkey'])){
+			// if not, find out where we are in the process
+			if(!isset($_COOKIE['lftoken']) && $_GET['token'] == ''){
+				// get a token
+				if($this->callback != ''){
+					// if there is a callback, include that in the api call
+					$lastfm = 'http://www.last.fm/api/auth/?api_key=' . $this->apikey . '&cb=' . $this->callback;
+				}else{
+					$lastfm = 'http://www.last.fm/api/auth/?api_key=' . $this->apikey;
+				}
+				header("Location: $lastfm");
+				exit();
+			}elseif(!isset($_COOKIE['lftoken'])){
+				// get the token, and set a cookie with it
+				$token = $_GET['token'];
+				setcookie('lftoken', $token, time()+3600);
+				// get a api signiture
+				$params = array(
+					'method' => 'auth.getSession',
+					'token' => $token,
+				);
+				$sig = $this->signiture($params);
+				// get the session key
+				$lastfm = $this->url . '?method=auth.getSession&token=' . $token . '&api_key=' . $this->apikey . '&api_sig=' . $sig;
+				$xml = simplexml_load_file($lastfm);
+				$key = $xml->session->key;
+				setcookie('lastfmkey',$key,time()+3600*24*30);
+				return $key;
+			}else{
+				// get a api signiture
+				$token = $_COOKIE['lftoken'];
+				$params = array(
+					'method' => 'auth.getSession',
+					'token' => $token,
+				);
+				$sig = $this->signiture($params);
+				// get the session key
+				$lastfm = $this->url . '?method=auth.getSession&token=' . $token . '&api_key=' . $this->apikey . '&api_sig=' . $sig;
+				$xml = simplexml_load_file($lastfm);
+				$key = $xml->session->key;
+				setcookie('lastfmkey',$key,time()+3600*24*30);
+				return $key;
+			}
+		}else{
+			$key = $_COOKIE['lastfmkey'];
+			return $key;
+		}
+	}
+	
+	/**
+	 * This function generates the a signiture for each call.
+	 * Each call has a unique signiture. It's an md5 hash of all the passed parameters
+	 */
+	
+	protected function signiture($params){
+		$sig_string = 'api_key' . $this->apikey;
+		foreach($params as $key => $value){
+			$sig_string .= $key . $value;
+		}
+		$sig_string .= $this->secret;
+		$sig = md5($sig_string);
+		return $sig;
 	}
 	
 	/************************
@@ -64,6 +141,8 @@ class lastFM{
 	*	The time back parameter is specified in days.
 	*	One "bug" is if you want to specify the time back, you must also specify a limit.
 	*	You could pass nothing ('') or -1 as a limit to get all.
+	*
+	*	I will be re-doing this in a later version.
 	**/
 	   
 	function userRecent($l='',$t=''){
@@ -475,6 +554,44 @@ class lastFM{
 	}
 	
 	/********************
+		USER AUTH METHODS
+	********************/
+	
+	function recentStations(){
+		// get the lastfm session key
+		$sk = $this->auth();
+		// get the signiture
+		$params = array(
+			'method' => 'user.getRecentStations',
+			'sk' => $sk,
+			'user' => $this->user
+		);
+		$sig = $this->signiture($params);
+		// build the api url
+		$lastfm = $this->url . '?method=user.getRecentStations&user=' . $this->user . '&sk=' . $sk . '&api_key=' . $this->apikey . '&api_sig=' . $sig;
+		// get the xml file
+		$xml = simplexml_load_file($lastfm);
+		
+		$stations = $xml->recentstations->station;
+		$info = array();
+		$i = 0;
+		foreach($stations as $station){
+			$info[$i] = array(
+				'type' => $station->type,
+				'name' => $station->name,
+				'url' => $station->url,
+				'resource' => $station->resource->name,
+				'resource_url' => $station->resource->url,
+				'resource_img' => $station->resource->image[2]
+			);
+			
+			$i++;
+		}
+		
+		return $info;
+	}
+	
+	/********************
 		CHART METHODS
 	********************/
 	
@@ -778,4 +895,44 @@ class lastFM{
 		return $info;
 	}
 	
+	/********************
+		ARTIST CALLS
+	********************/
+	
+	function artistInfo($artist){
+		$lastfm = $this->url . '?method=artist.getinfo&artist=' . $artist . '&autocorrect=1&api_key=' . $this->apikey;
+		$xml = simplexml_load_file($lastfm);
+		
+		// returns a single single record
+		$artist = $xml->artist;
+		$info = array();
+		$info['name'] = $artist->name;
+		$info['url'] = $artist->url;
+		$info['img'] = $artist->image[2];
+		$info['listeners'] = $artist->stats->listeners;
+		$info['playcount'] = $artist->stats->playcount;
+		$info['summary'] = $artist->bio->summary;
+		$info['bio'] = $artist->bio->content;
+		$info['tags'] = array();
+		$i = 0;
+		foreach($artist->tags->tag as $tag){
+			$info['tags'][$i] = array(
+				'name' => $tag->name,
+				'url' => $tag->url
+			);
+			$i++;
+		}
+		$info['similar'] = array();
+		$i = 0;
+		foreach($artist->similar->artist as $similar){
+			$info['similar'][$i] = array(
+				'name' => $similar->name,
+				'url' => $similar->url,
+				'img' => $similar->image[2]
+			);
+			$i++;
+		}
+		
+		return $info;
+	}
 }

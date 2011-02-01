@@ -2,7 +2,7 @@
 
 Name: Tea-Fueled Last.fm PHP Class
 
-Version 0.4
+Version 0.5
 
 Author: Matthew Loberg
 
@@ -32,6 +32,12 @@ This was a class I created for last.fm's API. Not all of Last.fm's API calls are
 ***
 
 ## Changelog:
+
+### 0.5
+
+* Added authentication
+* user.getRecentStations
+* artist.getInfo
 
 ### 0.4
 
