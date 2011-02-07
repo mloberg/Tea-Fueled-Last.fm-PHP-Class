@@ -29,7 +29,7 @@ class lastFM{
 	}
 	
 	function callback($url){
-		$this->callback = $url
+		$this->callback = $url;
 	}
 	
 	/********************
@@ -41,7 +41,7 @@ class lastFM{
 	 * I will extend this later to store in a database.
 	**/
 	
-	protected function auth(){
+	private function auth(){
 		// find out if we already have a key to use
 		if(!isset($_COOKIE['lastfmkey'])){
 			// if not, find out where we are in the process
@@ -97,14 +97,25 @@ class lastFM{
 	 * Each call has a unique signiture. It's an md5 hash of all the passed parameters
 	 */
 	
-	protected function signiture($params){
-		$sig_string = 'api_key' . $this->apikey;
+	private function signiture($params){
+		$params['api_key'] = $this->apikey;
+		ksort($params);
 		foreach($params as $key => $value){
 			$sig_string .= $key . $value;
 		}
 		$sig_string .= $this->secret;
 		$sig = md5($sig_string);
 		return $sig;
+	}
+	
+	private function url($params){
+		$params['api_key'] = $this->apikey;
+		$lastfm = "{$this->url}?method={$params['method']}";
+		unset($params['method']);
+		foreach($params as $key => $val){
+			$lastfm .= "&{$key}={$val}";
+		}
+		return $lastfm;
 	}
 	
 	/************************
@@ -267,6 +278,33 @@ class lastFM{
 		$json = file_get_contents($lastfm);
 		$stations = json_decode($json, true);
 		return $stations['recentstations']['station'];
+	}
+	
+	function userShout($message,$user=''){
+		if($user == '') $user = $this->user;
+		$sk = $this->auth();
+		$params = array(
+			'method' => 'user.shout',
+			'sk' => $sk,
+			'user' => $user,
+			'message' => $message,
+		);
+		$sig = $this->signiture($params);
+		$params['api_key'] = $this->apikey;
+		$params['api_sig'] = $sig;
+		$params['format'] = 'json';
+		$data = http_build_query($params);
+		$ch = curl_init($this->url);
+		curl_setopt($ch, CURLOPT_POST, true);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		$result = curl_exec($ch);
+		$result = json_decode($result, true);
+		if($result['status'] !== "ok"){
+			return $result;
+		}else{
+			return true;
+		}
 	}
 	
 	/********************
