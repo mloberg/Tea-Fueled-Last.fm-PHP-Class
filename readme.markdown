@@ -2,7 +2,7 @@
 
 Name: Tea-Fueled Last.fm PHP Class
 
-Version 0.5.5
+Version 0.6
 
 Author: Matthew Loberg
 
@@ -26,10 +26,18 @@ This was a class I created for last.fm's API. Not all of Last.fm's API calls are
 
 * Add more API calls
 * Document
+* Add error reporting
 
 ***
 
 ## Changelog:
+
+### 0.6
+
+* Fixed up signature method
+* Added a url builder function
+* Added user.shout
+* Added all user calls
 
 ### 0.5.5
 

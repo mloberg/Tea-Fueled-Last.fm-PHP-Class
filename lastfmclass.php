@@ -5,7 +5,7 @@
  * Author: Matthew Loberg
  * URL: http://mloberg.com/blog/lastfmclass/
  * Author URL: http://mloberg.com
- * Version: 0.5.5
+ * Version: 0.6
  * License: Copyright 2011 Matthew Loberg. Licenced under the MIT licence. More information in licence.txt, readme.txt, and at http://creativecommons.org/licenses/MIT/
  *
  * This is a last.fm class I created for making API calls to last.fm.
@@ -97,7 +97,7 @@ class lastFM{
 	 * Each call has a unique signiture. It's an md5 hash of all the passed parameters
 	 */
 	
-	private function signiture($params){
+	private function signature($params){
 		$params['api_key'] = $this->apikey;
 		ksort($params);
 		foreach($params as $key => $value){
@@ -108,7 +108,8 @@ class lastFM{
 		return $sig;
 	}
 	
-	private function url($params){
+	private function url($params,$json=false){
+		if($json) $params['format'] = 'json';
 		$params['api_key'] = $this->apikey;
 		$lastfm = "{$this->url}?method={$params['method']}";
 		unset($params['method']);
@@ -116,6 +117,14 @@ class lastFM{
 			$lastfm .= "&{$key}={$val}";
 		}
 		return $lastfm;
+	}
+	
+	private function json($params){
+		$params['format'] = 'json';
+		$lastfm = $this->url($params);
+		$json = file_get_contents($lastfm);
+		$return = json_decode($json, true);
+		return $return;
 	}
 	
 	/************************
@@ -260,6 +269,49 @@ class lastFM{
 		return $tracks['weeklytrackchart']['track'];
 	}
 	
+	function userChartList(){
+		$lastfm = "{$this->url}?method=user.getweeklychartlist&user={$this->user}&api_key={$this->apikey}&format=json";
+		$json = file_get_contents($lastfm);
+		$list = json_decode($json, true);
+		return $list['weeklychartlist']['chart'];
+	}
+	
+	function userArtistTracks($artist){
+		$artist = urlencode($artist);
+		$lastfm = "{$this->url}?method=user.getartisttracks&user={$this->user}&artist={$artist}&api_key={$this->apikey}&format=json";
+		$json = file_get_contents($lastfm);
+		$tracks = json_decode($json, true);
+		return $tracks['artisttracks']['track'];
+	}
+	
+	function userNeighbours($l=''){
+		$lastfm = "{$this->url}?method=user.getneighbours&user={$this->user}&limit={$l}&api_key={$this->apikey}&format=json";
+		$json = file_get_contents($lastfm);
+		$neighbours = json_decode($json, true);
+		return $neighbours['neighbours']['user'];
+	}
+	
+	function userNewReleases(){
+		$lastfm = "{$this->url}?method=user.getnewreleases&user={$this->user}&api_key={$this->apikey}&format=json";
+		$json = file_get_contents($lastfm);
+		$releases = json_decode($json, true);
+		return $releases['albums']['album'];
+	}
+	
+	function userPastEvents(){
+		$lastfm = "{$this->url}?method=user.getpastevents&user={$this->user}&api_key={$this->apikey}&format=json";
+		$json = file_get_contents($lastfm);
+		$events = json_decode($json, true);
+		return $events['events']['event'];
+	}
+	
+	function userTags($tag){
+		$lastfm = "{$this->url}?method=user.getpersonaltags&user={$this->user}&tag={$tag}&taggingtype=artist&api_key={$this->apikey}&format=json";
+		$json = file_get_contents($lastfm);
+		$tags = json_decode($json, true);
+		return $tags['taggings'];
+	}
+	
 	/********************
 		USER AUTH METHODS
 	********************/
@@ -273,11 +325,39 @@ class lastFM{
 			'sk' => $sk,
 			'user' => $this->user
 		);
-		$sig = $this->signiture($params);
+		$sig = $this->signature($params);
 		$lastfm = "{$this->url}?method=user.getRecentStations&user={$this->user}&sk={$sk}&api_key={$this->apikey}&api_sig={$sig}&format=json";
 		$json = file_get_contents($lastfm);
 		$stations = json_decode($json, true);
 		return $stations['recentstations']['station'];
+	}
+	
+	function recommendedArtists(){
+		$sk = $this->auth();
+		$params = array(
+			'method' => 'user.getRecommendedArtists',
+			'sk' => $sk
+		);
+		$sig = $this->signature($params);
+		$params['api_sig'] = $sig;
+		$lastfm = $this->url($params,true);
+		$json = file_get_contents($lastfm);
+		$artists = json_decode($json, true);
+		return $artists['recommendations']['artist'];
+	}
+	
+	function recommendedEvents(){
+		$sk = $this->auth();
+		$params = array(
+			'method' => 'user.getRecommendedEvents',
+			'sk' => $sk
+		);
+		$sig = $this->signature($params);
+		$params['api_sig'] = $sig;
+		$lastfm = $this->url($params,true);
+		$json = file_get_contents($lastfm);
+		$events = json_decode($json, true);
+		return $events['events']['event'];
 	}
 	
 	function userShout($message,$user=''){
@@ -289,7 +369,7 @@ class lastFM{
 			'user' => $user,
 			'message' => $message,
 		);
-		$sig = $this->signiture($params);
+		$sig = $this->signature($params);
 		$params['api_key'] = $this->apikey;
 		$params['api_sig'] = $sig;
 		$params['format'] = 'json';
