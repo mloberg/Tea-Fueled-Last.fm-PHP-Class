@@ -2,7 +2,7 @@
 
 Name: Tea-Fueled Last.fm PHP Class
 
-Version 0.5
+Version 0.5.5
 
 Author: Matthew Loberg
 
@@ -24,14 +24,17 @@ This was a class I created for last.fm's API. Not all of Last.fm's API calls are
 
 ##To Do:
 
-* In getUserRecent() function, see if the track is currently playing
-* In User.getTop calls, get the rank
 * Add more API calls
 * Document
 
 ***
 
 ## Changelog:
+
+### 0.5.5
+
+* Most calls now return as JSON rather then xml
+* Cleaned up some code
 
 ### 0.5
 

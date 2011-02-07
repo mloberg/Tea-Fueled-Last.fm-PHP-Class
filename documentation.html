@@ -43,14 +43,6 @@ foreach($tracks as $track){
 	echo $track['name'];
 }
 </pre>
-		<p>Some calls allow for options to be passed. Right now, it doesn't have the greatest implementation, but this will change with the next version.</p>
-<pre>$track = $lastfm->userRecent(10)</pre>
-		<p>The above code adds a limit parameter, so only 10 tracks are passed back.</p>
-<pre>$track = $lastfm->userRecent(10, 7)</pre>
-		<p>The above code again, adds a limit and adds a time back parameter declared in days. So this call returns 10 tracks from the past 7 days.</p>
-		<p>Here is the problem with passing options back like this.</p>
-<pre>$track = $lastfm->userRecent('', 7)</pre>
-		<p>If you just want to pass back the time parameter, you have to add a blank parameter for the limit. This will be changing in the next version.</p>
 		<p>If you want to know what options each call has, please check the source.</p>
 	</div>
 	<hr />
