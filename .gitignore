@@ -1,9 +1,3 @@
-# .gitignore file
-
-lastfm.php
 index.php
 auth.php
-radio.methods.php
-
-# Mac OS X files
 .DS_Store
