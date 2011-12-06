@@ -37,27 +37,12 @@
 			return md5($str_to_sign);
 		}
 		
-		protected static function get($params){
-			$params['format'] = 'json';
-			return json_decode(file_get_contents(self::$url . '?' . http_build_query($params)), true);
-		}
-		
-		protected static function post($params){
-			$ch = curl_init(self::$url);
-			curl_setopt($ch, CURLOPT_POST, true);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-			$result = curl_exec($ch);
-			curl_close($ch);
-			return json_decode($result, true);
-		}
-		
 		/**
 		 * Return the Last.fm class
 		 */
 		
 		public static function auth(){
-			return new Auth();
+			return new LastfmAuth();
 		}
 		
 		public static function __callStatic($method, $params){
@@ -73,23 +58,54 @@
 		private static $post = array(
 			'album' => array('addTags', 'removeTag', 'share'),
 			'artist' => array('addTags', 'removeTag', 'share'),
-			'event' => array('attend', 'share', 'shout')
+			'event' => array('attend', 'share', 'shout'),
+			'library' => array('addAlbum', 'addArtist', 'addTrack', 'removeAlbum', 'removeArtist', 'removeScrobble', 'removeTrack'),
+			'playlist' => array('addTrack', 'create'),
+			'radio' => array('tune'),
+			'track' => array('addTags', 'ban', 'love', 'removeTag', 'scrobble', 'share', 'unban', 'unlove', 'updateNowPlaying'),
+			'user' => array('shout')
+		);
+		private static $auth = array(
+			'radio' => array('getPlaylist'),
+			'user' => array('getRecentStations', 'getRecommendedArtists', 'getRecommendedEvents')
 		);
 		
 		public function __construct($class){
-			$this->class = $class;
+			$this->class = strtolower($class);
+		}
+		
+		private static function post($params){
+			$ch = curl_init(self::$url);
+			curl_setopt($ch, CURLOPT_POST, true);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			$result = curl_exec($ch);
+			curl_close($ch);
+			return json_decode($result, true);
+		}
+		
+		private static function get($params){
+			$params['format'] = 'json';
+			return json_decode(file_get_contents(self::$url . '?' . http_build_query($params)), true);
 		}
 		
 		public function __call($method, $params){
 			$params = array_pop($params);
 			$params['method'] = $this->class . '.' . $method;
 			$params['api_key'] = self::$api_key;
-			
+			if(in_array($method, self::$post[$this->class]) || in_array($method, self::$auth[$this->class])){
+				$params['sk'] = self::$session;
+				$params['api_sig'] = self::sign($params);
+				if(in_array($method, self::$post[$this->class])){
+					return self::post($params);
+				}
+			}
+			return self::get($params);
 		}
 	
 	}
 	
-	class Auth extends Lastfm {
+	class LastfmAuth extends Lastfm {
 	
 		public function __construct(){}
 		
@@ -106,61 +122,8 @@
 				'method' => 'auth.getSession'
 			);
 			$params['api_sig'] = self::sign($params);
-			return self::get($params);
-		}
-	
-	}
-	
-	class Album extends Lastfm {
-	
-		public function __construct(){}
-		
-		public function __call($method, $params){
-			$params = array_pop($params);
-			$params['method'] = 'album.' . $method;
-			$params['api_key'] = self::$api_key;
-			if(preg_match('/^(addTags|removeTag|share)$/', $method)){
-				$params['sk'] = self::$session;
-				$params['api_sig'] = self::sign($params);
-				return self::post($params);
-			}
-			return self::get($params);
-		}
-	
-	}
-	
-	class Artist extends Lastfm {
-	
-		public function __construct(){}
-		
-		public function __call($method, $params){
-			$params = array_pop($params);
-			$params['method'] = 'artist.' . $method;
-			$params['api_key'] = self::$api_key;
-			if(preg_match('/^(addTags|removeTag|share|shout)$/', $method)){
-				$params['sk'] = self::$session;
-				$params['api_sig'] = self::sign($params);
-				return self::post($params);
-			}
-			return self::get($params);
-		}
-	
-	}
-	
-	class User extends Lastfm {
-	
-		public function __construct(){}
-		
-		public function __call($method, $params){
-			$params = array_pop($params);
-			$params['method'] = 'user.' . $method;
-			$params['api_key'] = self::$api_key;
-			if(preg_match('/^(getRecentStations|getRecommendedArtists|getRecommendedEvents|shout)$/', $method)){
-				$params['sk'] = self::$session;
-				$params['api_sig'] = self::sign($params);
-				if($method == 'shout') return self::post($params);
-			}
-			return self::get($params);
+			$params['format'] = 'json';
+			return json_decode(file_get_contents(self::$url . '?' . http_build_query($params)), true);
 		}
 	
 	}
